@@ -337,48 +337,91 @@
             <header class="flex flex-col lg:flex-row justify-between items-center gap-6 border-b border-stone-200 pb-6 text-center md:text-left">
                 <div>
                     <h2 class="text-3xl font-black text-[#0a0a0b] uppercase tracking-tighter italic">Company <span class="text-[#b0955b]">Insights</span></h2>
-                    <p class="text-[10px] text-[#b0955b] font-bold uppercase mt-2"><i class="fa-solid fa-circle-check"></i> Sourced directly from RealInternational.com</p>
+                    <p class="text-[10px] text-[#b0955b] font-bold uppercase mt-2"><i class="fa-solid fa-circle-check"></i> Live Synced from RealInternational.com</p>
                 </div>
             </header>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="newsGrid"></div>
+            <!-- 给新闻网格预留出动态渲染的空间 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="newsGrid"></div>
         </div>
 
     </main>
 
     <script>
         // =====================================================================
-        // 【功能 1】公司新闻 (100% 安全：全部链接回官网主页或安全目录，杜绝404)
+        // 【功能 1】公司新闻 (真实 RSS 动态抓取引擎)
+        // 自动从 realinternational.com 拉取最新文章，提取标题、日期、摘要和直接链接。
         // =====================================================================
-        const COMPANY_NEWS_DATA = [
+        const COMPANY_NEWS_FALLBACK = [
             { 
-                cat: 'Market Report', src: 'Real International', date: 'Feb 2026', 
-                title: 'Q1 2026 Market Update: East Austin Continues to Capture Tech Migration', 
-                link: 'https://realinternational.com/', // Safe fallback to homepage
-                summary: 'Our internal research team analyzes the recent influx of headquarters to Austin and its direct impact on our core residential portfolio.', 
-                ir: 'Direct confirmation of our thesis regarding Mueller Parkside and Cielo.' 
+                cat: 'Market Updates', src: 'Real International', date: 'Recent', 
+                title: 'Latest Market Updates and Insights from Our Team', 
+                link: 'https://realinternational.com/market-updates/', 
+                summary: 'Explore the latest trends, economic shifts, and regional updates directly from our internal research and investment team.' 
             },
             { 
-                cat: 'Portfolio Update', src: 'Real International', date: 'Jan 2026', 
-                title: 'RCG Portfolio Achieves Key Construction Milestones in January', 
-                link: 'https://realinternational.com/', // Safe fallback to homepage
-                summary: 'An update on the successful topping out of multiple units in our residential development pipelines, securing investor timelines.', 
-                ir: 'Highlights the execution capability of our Asset Management team for RCG Harvest 3.' 
-            },
-            { 
-                cat: 'Strategy Insight', src: 'Real International', date: 'Dec 2025', 
-                title: 'Why Industrial Outdoor Storage (IOS) is the Asset Class of 2026', 
-                link: 'https://realinternational.com/', // Safe fallback to homepage
-                summary: 'A deep dive into how supply chain shifts along SH-130 are creating outsized returns for entitled land assets.', 
-                ir: 'Provides the fundamental logic supporting our GT-48 offering.' 
-            },
-            { 
-                cat: 'Macro Outlook', src: 'Real International', date: 'Dec 2025', 
-                title: 'Navigating the 2026 Interest Rate Pivot: Opportunities in Fixed Yields', 
-                link: 'https://realinternational.com/', // Safe fallback to homepage
-                summary: 'How investors can leverage accrued notes and private lending to capture outsized yields during the current macroeconomic transition.', 
-                ir: 'Validates the strategic implementation of our 15% Accrued Note and 8% Monthly Pay structures.' 
+                cat: 'Portfolio News', src: 'Real International', date: 'Recent', 
+                title: 'Ongoing Developments in the Austin Core', 
+                link: 'https://realinternational.com/', 
+                summary: 'Stay informed on the structural growth of our active portfolios, operational milestones, and real estate news.' 
             }
         ];
+
+        async function fetchCompanyNews() {
+            const grid = document.getElementById('newsGrid');
+            if(!grid) return;
+            
+            // 显示加载动画
+            grid.innerHTML = `<div class="col-span-full flex flex-col items-center justify-center py-12"><i class="fa-solid fa-circle-notch fa-spin text-3xl text-[#b0955b] mb-4"></i><p class="text-[10px] font-bold text-[#717375] uppercase tracking-widest">Syncing Live Updates from RealInternational.com...</p></div>`;
+
+            try {
+                // 尝试抓取官网 RSS Feed (WordPress 默认全局新闻通道)
+                const rssUrl = encodeURIComponent('https://realinternational.com/feed/'); 
+                const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${rssUrl}`);
+                const data = await res.json();
+                
+                if (data.status === 'ok' && data.items && data.items.length > 0) {
+                    const fetchedNews = data.items.slice(0, 3).map(item => {
+                        // 提取纯文本摘要 (去除 HTML 标签)
+                        let summaryText = item.description ? item.description.replace(/<[^>]+>/g, '').substring(0, 110) + '...' : 'Click to read full market update details...';
+                        let category = (item.categories && item.categories.length > 0) ? item.categories[0] : 'Market Insights';
+                        
+                        return {
+                            cat: category,
+                            date: new Date(item.pubDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                            title: item.title,
+                            link: item.link,
+                            summary: summaryText
+                        };
+                    });
+                    renderNewsGrid(fetchedNews);
+                } else {
+                    throw new Error("RSS feed returned empty or failed");
+                }
+            } catch (error) {
+                console.warn("Live fetch failed, using fallback data:", error);
+                renderNewsGrid(COMPANY_NEWS_FALLBACK);
+            }
+        }
+
+        function renderNewsGrid(newsArray) {
+            const grid = document.getElementById('newsGrid');
+            if(!grid) return;
+            
+            grid.innerHTML = newsArray.map(n => `
+                <div class="glass-card p-8 space-y-4 group hover:shadow-lg transition-all flex flex-col justify-between border-l-4 border-transparent hover:border-[#b0955b]">
+                    <div>
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-[9px] font-black uppercase tracking-[0.2em] text-[#b0955b] bg-[#17433a] px-2 py-1 rounded">${n.cat}</span>
+                            <span class="text-[9px] font-black uppercase text-stone-400 italic">${n.date}</span>
+                        </div>
+                        <h4 class="text-lg font-black text-[#0a0a0b] leading-tight mb-3">${n.title}</h4>
+                        <p class="text-[11px] text-[#717375] leading-relaxed font-medium">Excerpt: ${n.summary}</p>
+                    </div>
+                    <div class="pt-4 mt-6 border-t border-stone-200">
+                        <a href="${n.link}" target="_blank" class="text-[10px] font-black text-[#17433a] uppercase hover:underline flex items-center gap-1 italic tracking-widest">READ ON REALINTERNATIONAL.COM <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                    </div>
+                </div>`).join('');
+        }
 
         // =====================================================================
         // 【功能 2】完整恢复 6 个客户持仓项目，金额完美对齐原始 Report
@@ -580,7 +623,9 @@
             try {
                 showSection('overview');
                 renderPortfolio(); 
-                renderNews();
+                
+                // 【启动自动爬虫】当页面加载完成时，立刻开始抓取官网新闻
+                fetchCompanyNews();
                 
                 const allocCtx = document.getElementById('allocationChart')?.getContext('2d');
                 if(allocCtx) {
