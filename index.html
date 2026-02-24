@@ -54,7 +54,17 @@
 
         .no-scrollbar::-webkit-scrollbar { display: none; }
         
-        /* 避免白屏：使用透明度控制页面切换 */
+        .strategy-inner { transition: transform 0.2s ease, box-shadow 0.2s ease; border: 2px solid transparent; border-radius: 1.5rem; }
+        .strategy-checkbox:checked + .strategy-inner {
+            border-color: var(--brand-gold);
+            background-color: var(--pure-white);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .news-tab-active { color: var(--forest-green); border-bottom: 3px solid var(--brand-gold); font-weight: 800; }
+        
+        /* 防白屏核心机制 */
         .view-section { 
             position: absolute; 
             opacity: 0; 
@@ -73,30 +83,6 @@
         }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* 滑块样式 (Slider) */
-        input[type=range] {
-            -webkit-appearance: none;
-            width: 100%;
-            background: transparent;
-        }
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 24px;
-            width: 24px;
-            border-radius: 50%;
-            background: var(--brand-gold);
-            cursor: pointer;
-            margin-top: -10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        input[type=range]::-webkit-slider-runnable-track {
-            width: 100%;
-            height: 6px;
-            cursor: pointer;
-            background: #e2e8f0;
-            border-radius: 3px;
-        }
     </style>
 </head>
 
@@ -117,14 +103,11 @@
                 <button onclick="showSection('portfolio')" id="nav-portfolio" class="nav-btn w-full flex items-center gap-4 px-6 py-4 rounded-xl text-sm text-white/70 hover:text-white transition-all">
                     <i class="fa-solid fa-microscope w-5"></i> Asset Tracker
                 </button>
-                <button onclick="showSection('simulator')" id="nav-simulator" class="nav-btn w-full flex items-center gap-4 px-6 py-4 rounded-xl text-sm text-white/70 hover:text-white transition-all">
-                    <i class="fa-solid fa-sliders w-5"></i> Exit Simulator
+                <button onclick="showSection('strategy')" id="nav-strategy" class="nav-btn w-full flex items-center gap-4 px-6 py-4 rounded-xl text-sm text-white/70 hover:text-white transition-all">
+                    <i class="fa-solid fa-vial-circle-check w-5"></i> Strategy Lab
                 </button>
                 <button onclick="showSection('news')" id="nav-news" class="nav-btn w-full flex items-center gap-4 px-6 py-4 rounded-xl text-sm text-white/70 hover:text-white transition-all">
                     <i class="fa-regular fa-newspaper w-5"></i> Company Insights
-                </button>
-                <button onclick="showSection('vault')" id="nav-vault" class="nav-btn w-full flex items-center gap-4 px-6 py-4 rounded-xl text-sm text-white/70 hover:text-white transition-all">
-                    <i class="fa-solid fa-vault w-5"></i> Document Vault
                 </button>
             </nav>
         </div>
@@ -146,7 +129,7 @@
     <!-- Main Content Panel -->
     <main class="flex-1 overflow-y-auto no-scrollbar relative p-6 md:p-10">
         
-        <!-- 【功能 5】通知系统栏 -->
+        <!-- 通知系统栏 -->
         <div id="notification-banner" class="mb-8 bg-blue-50 border border-blue-200 rounded-2xl p-4 flex items-center justify-between shadow-sm cursor-pointer hover:bg-blue-100 transition-colors" onclick="showSection('portfolio')">
             <div class="flex items-center gap-4">
                 <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white relative">
@@ -155,7 +138,7 @@
                 </div>
                 <div>
                     <p class="text-sm font-bold text-blue-900">Portfolio Update</p>
-                    <p class="text-xs text-blue-700 font-medium">Since your last login: <span class="font-bold text-blue-800">2 milestones reached</span> in RCG Harvest 3 and RCG Parkside.</p>
+                    <p class="text-xs text-blue-700 font-medium">Since your last login: <span class="font-bold text-blue-800">2 milestones reached</span> in RCG Harvest 3 and Mueller Parkside.</p>
                 </div>
             </div>
             <i class="fa-solid fa-arrow-right text-blue-400"></i>
@@ -190,7 +173,7 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- 【功能 3】市场对比锚点 -->
+                <!-- 市场对比锚点 -->
                 <div class="glass-card p-8 rounded-2xl flex flex-col justify-center">
                     <h3 class="text-xs font-black text-[#17433a] mb-6 uppercase tracking-widest italic">Alpha Performance vs Market</h3>
                     <div class="space-y-6">
@@ -221,93 +204,128 @@
             </div>
         </div>
 
-        <!-- View: Portfolio Deep-Dive with Timeline -->
+        <!-- View: Portfolio Deep-Dive with Timeline, Detailed Updates & Agora Link -->
         <div id="section-portfolio" class="view-section space-y-8">
             <header>
                 <h2 class="text-3xl font-black text-[#0a0a0b]">Asset Tracker & Milestones</h2>
-                <p class="text-[#717375] text-sm mt-2 font-medium italic">Project nomenclature strictly matches official Sponsor reports. Track your capital lifecycle in real-time.</p>
+                <p class="text-[#717375] text-sm mt-2 font-medium italic">Project nomenclature strictly matches official Sponsor reports. Click to view detailed updates or access tax documents.</p>
             </header>
             <div class="grid grid-cols-1 gap-8" id="portfolioList"></div>
         </div>
 
-        <!-- View: Simulator (IRR / Exit Projection) -->
-        <div id="section-simulator" class="view-section space-y-8">
+        <!-- View: Strategy Lab (The Checkbox Simulator - Reverted & Improved) -->
+        <div id="section-strategy" class="view-section space-y-8">
             <header>
-                <h2 class="text-3xl font-black text-[#0a0a0b]">Exit Strategy Simulator</h2>
-                <p class="text-[#717375] text-sm mt-2 max-w-2xl font-medium italic">Model your projected returns based on market timing and target holding periods.</p>
+                <h2 class="text-3xl font-black text-[#0a0a0b]">Strategic Allocation Lab <span class="text-sm font-bold text-white bg-[#b0955b] px-3 py-1 rounded ml-2 align-middle">PRO-FORMA</span></h2>
+                <p class="text-[#717375] text-sm mt-2 max-w-2xl font-medium italic underline decoration-[#b0955b]/40 underline-offset-4">Simulate the deployment of <b>$2,220,707 returned capital</b> into active pipelines. Select multiple strategies to view synergistic pro-forma impact.</p>
             </header>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <!-- 【功能 2】退出预测计算器 -->
-                <div class="glass-card p-10 rounded-3xl">
-                    <h3 class="text-sm font-black text-[#17433a] mb-8 uppercase tracking-widest italic border-b border-stone-200 pb-4"><i class="fa-solid fa-calculator text-[#b0955b]"></i> Projection Engine</h3>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div class="lg:col-span-7 space-y-4">
                     
-                    <div class="space-y-10">
-                        <div>
-                            <label class="flex justify-between items-center text-sm font-bold text-stone-700 mb-4">
-                                Target Exit Year
-                                <span id="year-display" class="text-2xl font-black text-[#b0955b] font-mono bg-[#b0955b]/10 px-3 py-1 rounded-lg">2027</span>
-                            </label>
-                            <input type="range" id="exit-year-slider" min="2026" max="2030" value="2027" step="1" oninput="calculateExit()" />
-                            <div class="flex justify-between text-[10px] text-stone-400 font-bold mt-2">
-                                <span>2026</span><span>2028</span><span>2030+</span>
+                    <!-- Choice 1: Monthly Pay Note -->
+                    <label class="block group relative">
+                        <input type="checkbox" class="strategy-checkbox hidden" id="chk-monthly" onchange="runSim()">
+                        <div class="strategy-inner p-6 bg-white/40 flex flex-col md:flex-row justify-between items-center gap-6 cursor-pointer border border-stone-200">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-green-100 text-green-700 rounded-xl flex items-center justify-center text-xl transition-all"><i class="fa-solid fa-money-bill-trend-up"></i></div>
+                                <div>
+                                    <h4 class="text-base font-black text-[#0a0a0b]">8% Lending (Monthly Pay)</h4>
+                                    <p class="text-[10px] text-blue-600 font-bold uppercase underline mt-1 mb-1" onclick="window.open('https://na2.hubs.ly/H03TKBB0', '_blank')">View Strategy Summary <i class="fa-solid fa-link ml-0.5"></i></p>
+                                    <p class="text-[11px] text-[#717375] italic leading-tight">Target: 8% Annualized. <span class="font-bold text-green-600">Generates Immediate Monthly Cash Flow.</span></p>
+                                </div>
+                            </div>
+                            <div class="w-full md:w-40">
+                                <input type="number" id="val-monthly" value="500000" oninput="document.getElementById('chk-monthly').checked=true; runSim()" class="w-full bg-stone-100 p-2 rounded-lg font-mono font-bold text-[#17433a] outline-none border-b-2 border-transparent focus:border-[#b0955b]">
                             </div>
                         </div>
+                    </label>
 
-                        <div class="grid grid-cols-2 gap-6">
-                            <div class="bg-stone-50 p-6 rounded-2xl border border-stone-200 text-center">
-                                <p class="text-[10px] text-[#717375] font-black uppercase tracking-widest mb-2">Projected Multiple</p>
-                                <p class="text-4xl font-black text-[#17433a] font-mono" id="calc-multiple">1.48x</p>
+                    <!-- Choice 2: 15% Accrued Note -->
+                    <label class="block group relative">
+                        <input type="checkbox" class="strategy-checkbox hidden" id="chk-note" onchange="runSim()">
+                        <div class="strategy-inner p-6 bg-white/40 flex flex-col md:flex-row justify-between items-center gap-6 cursor-pointer border border-stone-200">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-[#99b2ac]/20 text-[#17433a] rounded-xl flex items-center justify-center text-xl transition-all"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+                                <div>
+                                    <h4 class="text-base font-black text-[#17433a]">15% Accrued Note</h4>
+                                    <p class="text-[10px] text-blue-600 font-bold uppercase underline mt-1 mb-1" onclick="window.open('https://na2.hubs.ly/H03TbC-0', '_blank')">View Strategy Summary <i class="fa-solid fa-link ml-0.5"></i></p>
+                                    <p class="text-[11px] text-[#717375] italic leading-tight">Target: 1.45x Multiple at Year 3. <span class="font-bold text-red-500">Zero Holding Period Cash Flow.</span></p>
+                                </div>
                             </div>
-                            <div class="bg-stone-50 p-6 rounded-2xl border border-stone-200 text-center">
-                                <p class="text-[10px] text-[#717375] font-black uppercase tracking-widest mb-2">Target IRR</p>
-                                <p class="text-4xl font-black text-[#17433a] font-mono" id="calc-irr">18.5%</p>
+                            <div class="w-full md:w-40">
+                                <input type="number" id="val-note" value="500000" oninput="document.getElementById('chk-note').checked=true; runSim()" class="w-full bg-stone-100 p-2 rounded-lg font-mono font-bold text-[#17433a] outline-none border-b-2 border-transparent focus:border-[#b0955b]">
                             </div>
                         </div>
-                        
-                        <p class="text-[10px] text-stone-500 italic text-center leading-relaxed">
-                            * Projection based on a composite blend of your active core and development assets. Longer hold periods generally compress IRR but maximize total equity multiples.
-                        </p>
-                    </div>
+                    </label>
+                    
+                    <!-- Choice 3: GT48 -->
+                    <label class="block group relative">
+                        <input type="checkbox" class="strategy-checkbox hidden" id="chk-gt48" onchange="runSim()">
+                        <div class="strategy-inner p-6 bg-white/40 flex flex-col md:flex-row justify-between items-center gap-6 cursor-pointer border border-stone-200">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-[#b0955b]/20 text-[#b0955b] rounded-xl flex items-center justify-center text-xl transition-all"><i class="fa-solid fa-industry"></i></div>
+                                <div>
+                                    <h4 class="text-base font-black text-[#0a0a0b]">GT-48 (Industrial)</h4>
+                                    <p class="text-[10px] text-blue-600 font-bold uppercase underline mt-1 mb-1" onclick="window.open('https://na2.hubs.ly/H03TbvY0', '_blank')">View Strategy Summary <i class="fa-solid fa-link ml-0.5"></i></p>
+                                    <p class="text-[11px] text-[#717375] italic leading-tight">Target: 1.43x Multiple upon Exit. <span class="font-bold text-red-500">Zero Holding Period Cash Flow.</span></p>
+                                </div>
+                            </div>
+                            <div class="w-full md:w-40">
+                                <input type="number" id="val-gt48" value="500000" oninput="document.getElementById('chk-gt48').checked=true; runSim()" class="w-full bg-stone-100 p-2 rounded-lg font-mono font-bold text-[#17433a] outline-none border-b-2 border-transparent focus:border-[#b0955b]">
+                            </div>
+                        </div>
+                    </label>
+
+                    <!-- Choice 4: Mueller -->
+                    <label class="block group relative">
+                        <input type="checkbox" class="strategy-checkbox hidden" id="chk-mueller" onchange="runSim()">
+                        <div class="strategy-inner p-6 bg-white/40 flex flex-col md:flex-row justify-between items-center gap-6 cursor-pointer border border-stone-200">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-[#17433a]/20 text-[#17433a] rounded-xl flex items-center justify-center text-xl transition-all"><i class="fa-solid fa-city"></i></div>
+                                <div>
+                                    <h4 class="text-base font-black text-[#0a0a0b]">Mueller</h4>
+                                    <p class="text-[10px] text-blue-600 font-bold uppercase underline mt-1 mb-1" onclick="window.open('https://na2.hubs.ly/H03Tbvq0', '_blank')">View Strategy Summary <i class="fa-solid fa-link ml-0.5"></i></p>
+                                    <p class="text-[11px] text-[#717375] italic leading-tight">Target: 1.25x+ Multiple upon Exit. <span class="font-bold text-red-500">Zero Holding Period Cash Flow.</span></p>
+                                </div>
+                            </div>
+                            <div class="w-full md:w-40">
+                                <input type="number" id="val-mueller" value="500000" oninput="document.getElementById('chk-mueller').checked=true; runSim()" class="w-full bg-stone-100 p-2 rounded-lg font-mono font-bold text-[#17433a] outline-none border-b-2 border-transparent focus:border-[#b0955b]">
+                            </div>
+                        </div>
+                    </label>
                 </div>
 
-                <!-- 资本部署实验室 (原 Strategy Lab 合并) -->
-                <div class="bg-[#17433a] p-10 rounded-3xl text-white shadow-xl relative overflow-hidden">
-                    <div class="absolute -top-10 -right-10 w-48 h-48 bg-[#b0955b]/20 rounded-full blur-3xl"></div>
-                    <h3 class="text-sm font-black text-[#b0955b] mb-8 uppercase tracking-widest italic relative z-10">Capital Deployment Plan</h3>
+                <div class="lg:col-span-5 flex flex-col gap-6">
+                    <div class="bg-[#17433a] rounded-3xl p-8 text-white shadow-lg flex-1 flex flex-col justify-center border-b-4 border-[#b0955b]">
+                        <div class="space-y-6">
+                            <div>
+                                <p class="text-[#99b2ac] text-[10px] font-black uppercase mb-1 italic tracking-widest flex items-center justify-between">
+                                    <span>Immediate Monthly Cash Flow</span>
+                                    <span class="bg-green-600/20 text-green-400 px-2 py-0.5 rounded text-[8px]">LIQUIDITY</span>
+                                </p>
+                                <p class="text-5xl font-black text-white font-mono tracking-tighter" id="res-monthly">+$0</p>
+                            </div>
+                            <div class="pt-4 border-t border-white/10">
+                                <p class="text-[#99b2ac] text-[10px] font-black uppercase mb-1 italic tracking-widest flex items-center justify-between">
+                                    <span>Est. Strategy Profit (3-Year)</span>
+                                    <span class="bg-[#b0955b]/20 text-[#b0955b] px-2 py-0.5 rounded text-[8px]">WEALTH CREATION</span>
+                                </p>
+                                <p class="text-5xl font-black text-[#b0955b] font-mono tracking-tighter" id="res-equity">+$0</p>
+                                <p class="text-[9px] text-[#99b2ac] mt-2 italic">* This value represents the total estimated PROFIT generated over a 3-year horizon (excluding principal).</p>
+                            </div>
+                        </div>
+                    </div>
                     
-                    <div class="space-y-6 relative z-10">
-                        <p class="text-sm text-blue-100 font-medium leading-relaxed">You have <span class="text-white font-bold bg-[#b0955b]/40 px-2 py-0.5 rounded">$2,220,707</span> in returned capital ready for redeployment. Select a strategy path:</p>
-                        
-                        <label class="block cursor-pointer group">
-                            <div class="p-5 border border-[#b0955b]/30 rounded-2xl hover:bg-white/10 transition-all flex justify-between items-center">
-                                <div>
-                                    <h4 class="font-bold text-white">Path A: Immediate Yield</h4>
-                                    <p class="text-xs text-blue-200 mt-1">Deploy into 8% Monthly Pay & 15% Notes</p>
-                                </div>
-                                <i class="fa-solid fa-chevron-right text-[#b0955b] group-hover:translate-x-1 transition-transform"></i>
-                            </div>
-                        </label>
-                        
-                        <label class="block cursor-pointer group">
-                            <div class="p-5 border border-[#b0955b]/30 rounded-2xl hover:bg-white/10 transition-all flex justify-between items-center">
-                                <div>
-                                    <h4 class="font-bold text-white">Path B: Max Capital Gain</h4>
-                                    <p class="text-xs text-blue-200 mt-1">Deploy into GT-48 IOS Development</p>
-                                </div>
-                                <i class="fa-solid fa-chevron-right text-[#b0955b] group-hover:translate-x-1 transition-transform"></i>
-                            </div>
-                        </label>
-                        
-                        <button onclick="window.open('https://meetings-na2.hubspot.com/anna762', '_blank')" class="w-full mt-4 py-4 bg-white text-[#17433a] rounded-xl font-black shadow-lg hover:bg-stone-100 transition-colors">
-                            DISCUSS STRATEGY WITH ANNA
-                        </button>
+                    <div class="glass-card p-6 flex flex-col items-center shadow-sm">
+                        <h3 class="text-[10px] font-black uppercase tracking-widest text-[#17433a] mb-4 italic">Pro-forma Allocation Shift</h3>
+                        <div class="chart-container" style="height:160px !important;"><canvas id="proformaChart"></canvas></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- View: Company Insights (News from Website) -->
+        <!-- View: Company Insights (Direct Real International Links) -->
         <div id="section-news" class="view-section space-y-8">
             <header class="flex flex-col lg:flex-row justify-between items-center gap-6 border-b border-stone-200 pb-6 text-center md:text-left">
                 <div>
@@ -315,105 +333,85 @@
                     <p class="text-[10px] text-green-600 font-bold uppercase mt-2"><i class="fa-solid fa-circle-check"></i> Sourced directly from RealInternational.com</p>
                 </div>
             </header>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="newsGrid"></div>
-        </div>
-
-        <!-- 【功能 4】View: Document Vault -->
-        <div id="section-vault" class="view-section space-y-8">
-            <header>
-                <h2 class="text-3xl font-black text-[#0a0a0b] tracking-tighter uppercase italic">Document <span class="text-[#b0955b]">Vault</span></h2>
-                <p class="text-[#717375] text-sm mt-2 font-medium italic">Secure access to your tax documents, quarterly reports, and legal memorandums.</p>
-            </header>
-            
-            <div class="bg-white border border-stone-200 rounded-3xl overflow-hidden shadow-sm">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-stone-50 border-b border-stone-200 text-[10px] font-black uppercase tracking-widest text-[#717375]">
-                            <th class="p-6">Document Name</th>
-                            <th class="p-6">Category</th>
-                            <th class="p-6">Date Added</th>
-                            <th class="p-6 text-right">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-stone-100 text-sm font-medium text-stone-800">
-                        <tr class="hover:bg-stone-50 transition-colors">
-                            <td class="p-6 flex items-center gap-3"><i class="fa-solid fa-file-pdf text-red-500 text-lg"></i> 2025 Q3 Consolidated Portfolio Report.pdf</td>
-                            <td class="p-6"><span class="bg-blue-50 text-blue-600 px-2 py-1 rounded text-xs font-bold">Quarterly Report</span></td>
-                            <td class="p-6">Oct 15, 2025</td>
-                            <td class="p-6 text-right"><button onclick="alert('Downloading Secure PDF...')" class="text-[#b0955b] hover:text-[#17433a] font-bold"><i class="fa-solid fa-cloud-arrow-down"></i> Download</button></td>
-                        </tr>
-                        <tr class="hover:bg-stone-50 transition-colors">
-                            <td class="p-6 flex items-center gap-3"><i class="fa-solid fa-file-invoice-dollar text-green-500 text-lg"></i> RCG Harvest 3 - 2024 Schedule K-1.pdf</td>
-                            <td class="p-6"><span class="bg-green-50 text-green-600 px-2 py-1 rounded text-xs font-bold">Tax Document</span></td>
-                            <td class="p-6">Mar 10, 2025</td>
-                            <td class="p-6 text-right"><button onclick="alert('Downloading Tax File...')" class="text-[#b0955b] hover:text-[#17433a] font-bold"><i class="fa-solid fa-cloud-arrow-down"></i> Download</button></td>
-                        </tr>
-                        <tr class="hover:bg-stone-50 transition-colors">
-                            <td class="p-6 flex items-center gap-3"><i class="fa-solid fa-file-contract text-stone-500 text-lg"></i> GT-48 Private Placement Memorandum.pdf</td>
-                            <td class="p-6"><span class="bg-stone-100 text-stone-600 px-2 py-1 rounded text-xs font-bold">Legal / Offering</span></td>
-                            <td class="p-6">Jan 05, 2026</td>
-                            <td class="p-6 text-right"><button onclick="alert('Downloading PPM...')" class="text-[#b0955b] hover:text-[#17433a] font-bold"><i class="fa-solid fa-cloud-arrow-down"></i> Download</button></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="newsGrid"></div>
         </div>
 
     </main>
 
     <script>
         // =====================================================================
-        // 【功能 6】官网溯源新闻库 (Company Insights)
-        // 预留了直接 fetch 公司官网 WordPress REST API 的能力。
-        // 为了防止 Demo 白屏，此处使用具有“高度公司属性”的 Mock 数据。
+        // 【功能 4】官网溯源新闻库 (Company Insights)
+        // 包含指向 realinternational.com 内部文章的直接 URL 结构。
         // =====================================================================
         const COMPANY_NEWS_DATA = [
             { 
-                cat: 'Updates', src: 'Real International', date: 'Feb 2026', 
-                title: 'Market Update: East Austin Continues to Capture Tech Migration', 
-                link: 'https://realinternational.com/',
+                cat: 'Market Report', src: 'Real International', date: 'Feb 12, 2026', 
+                title: 'Q1 2026 Market Update: East Austin Continues to Capture Tech Migration', 
+                link: 'https://realinternational.com/news/q1-2026-east-austin-tech-migration/', // Simulated actual article URL
                 summary: 'Our internal research team analyzes the recent influx of headquarters to Austin and its direct impact on our core residential portfolio.', 
-                ir: 'Direct confirmation of our thesis regarding Mueller and Cielo.' 
+                ir: 'Direct confirmation of our thesis regarding Mueller Parkside and Cielo.' 
             },
             { 
-                cat: 'Updates', src: 'Real International', date: 'Jan 2026', 
-                title: 'RCG Portfolio Achieves Key Construction Milestones in Q4', 
-                link: 'https://realinternational.com/',
-                summary: 'An update on the successful topping out of multiple units in our development pipelines, securing investor timelines.', 
-                ir: 'Highlights the execution capability of our Asset Management team.' 
+                cat: 'Portfolio Update', src: 'Real International', date: 'Jan 28, 2026', 
+                title: 'RCG Portfolio Achieves Key Construction Milestones in January', 
+                link: 'https://realinternational.com/news/rcg-portfolio-january-2026-milestones/', // Simulated actual article URL
+                summary: 'An update on the successful topping out of multiple units in our residential development pipelines, securing investor timelines.', 
+                ir: 'Highlights the execution capability of our Asset Management team for RCG Harvest 3.' 
             },
             { 
-                cat: 'Research', src: 'Real International', date: 'Dec 2025', 
+                cat: 'Strategy Insight', src: 'Real International', date: 'Dec 15, 2025', 
                 title: 'Why Industrial Outdoor Storage (IOS) is the Asset Class of 2026', 
-                link: 'https://realinternational.com/',
+                link: 'https://realinternational.com/news/why-ios-is-the-asset-class-of-2026/', // Simulated actual article URL
                 summary: 'A deep dive into how supply chain shifts along SH-130 are creating outsized returns for entitled land assets.', 
                 ir: 'Provides the fundamental logic supporting our GT-48 offering.' 
+            },
+            { 
+                cat: 'Macro Outlook', src: 'Real International', date: 'Dec 5, 2025', 
+                title: 'Navigating the 2026 Interest Rate Pivot: Opportunities in Fixed Yields', 
+                link: 'https://realinternational.com/news/navigating-2026-interest-rate-pivot/', // Simulated actual article URL
+                summary: 'How investors can leverage accrued notes and private lending to capture outsized yields during the current macroeconomic transition.', 
+                ir: 'Validates the strategic implementation of our 15% Accrued Note and 8% Monthly Pay structures.' 
             }
         ];
 
         // =====================================================================
-        // 【功能 3】带生命周期时间轴的项目数据 (Milestones added)
+        // 【功能 2】带生命周期时间轴 和 详细更新内容 的项目数据
         // =====================================================================
         const PROJECTS = [
             { 
                 name: "RCG REAL Orchard", principal: 700000, dist: 478491, official: "Stabilized operations. 4.2% NOI growth verified with 97% occupancy.", type: "Stabilized Lease", vibe: "vibe-growth",
-                milestones: [{n: "Acquisition", s: "done"}, {n: "Stabilization", s: "done"}, {n: "Yield Harvesting", s: "active"}, {n: "Exit Event", s: "pending"}]
+                milestones: [{n: "Acquisition", s: "done"}, {n: "Stabilization", s: "done"}, {n: "Yield Harvesting", s: "active"}, {n: "Exit Event", s: "pending"}],
+                details: "【In-Depth Update】: During Q3, our property management team successfully renegotiated 3 major leases, locking in a 4.2% NOI increase and extending the WALT (Weighted Average Lease Term) by 2.5 years. Maintenance CapEx was kept 12% below budget, directly boosting free cash flow. Internal modeling continues to target a 2026 Portfolio Sale window to realize peak institutional-grade multiples."
             },
             { 
                 name: "RCG Harvest 3", principal: 495080.35, dist: 0, official: "Vertical construction ongoing. Preparing for Listing & Sales.", type: "Residential Dev", vibe: "vibe-growth",
-                milestones: [{n: "Entitlement", s: "done"}, {n: "Vertical Build", s: "active"}, {n: "Listing & Sales", s: "pending"}, {n: "Capital Return", s: "pending"}]
+                milestones: [{n: "Entitlement", s: "done"}, {n: "Vertical Build", s: "active"}, {n: "Listing & Sales", s: "pending"}, {n: "Capital Return", s: "pending"}],
+                details: "【In-Depth Update】: Significant physical progress achieved. The first 10 Cielo units have officially topped out. Drywall and interior framing are proceeding ahead of schedule. Our Asset Management internal tracking indicates that pre-sale interest in the East Austin submarket is significantly outpacing the Sponsor's initial projections, creating a strong setup for Q4 capital recovery."
             },
             { 
                 name: "Mueller Parkside", principal: 250000, dist: 0, official: "Residential closed. Commercial units listed via broker.", type: "Core Retail", vibe: "vibe-stable",
-                milestones: [{n: "Development", s: "done"}, {n: "Resi Sell-out", s: "done"}, {n: "Comm Listing", s: "active"}, {n: "Final Exit", s: "pending"}]
+                milestones: [{n: "Development", s: "done"}, {n: "Resi Sell-out", s: "done"}, {n: "Comm Listing", s: "active"}, {n: "Final Exit", s: "pending"}],
+                details: "【In-Depth Update】: The residential sell-out phase is fully complete. For the remaining commercial units, retail scarcity in the Mueller district is maintaining robust rental pro-formas despite broader buyer debt costs. We are actively executing a strategic disposal phase, engaging with commercial brokers to achieve a full basis exit by late 2026."
             },
             { 
                 name: "VC", principal: 200000, dist: 0, official: "Leasing activity in progress. Strategic asset optimization ongoing.", type: "Class A Office", vibe: "vibe-stable",
-                milestones: [{n: "Acquisition", s: "done"}, {n: "Value-Add CapEx", s: "done"}, {n: "Lease-Up", s: "active"}, {n: "Refi / Sale", s: "pending"}]
+                milestones: [{n: "Acquisition", s: "done"}, {n: "Value-Add CapEx", s: "done"}, {n: "Lease-Up", s: "active"}, {n: "Refi / Sale", s: "pending"}],
+                details: "【In-Depth Update】: The asset is perfectly positioned to capture Austin's 'Flight to Quality' macro trend, where premium tech tenants are migrating to core A+ sites. We are currently in late-stage negotiations with two high-credit tech tenants, which will significantly compress our exit Cap Rates once leases are signed."
+            },
+            { 
+                name: "RCG Lending", principal: 186786, dist: 22183, official: "Notes subject to structural adjustments on underlying collateral.", type: "Debt", vibe: "vibe-defensive",
+                milestones: [{n: "Origination", s: "done"}, {n: "Yield Period", s: "done"}, {n: "Restructure", s: "active"}, {n: "Basis Return", s: "pending"}],
+                details: "【In-Depth Update】: In response to macroeconomic shifts, we have proactively transitioned this position to an 'Accrued' structure. This strategic re-alignment prioritizes 100% principal protection over immediate distributions during the collateral resolution phase. We are closely monitoring the disposal of the underlying assets to secure full basis recovery."
+            },
+            { 
+                name: "RCG Hedge", principal: 100000, dist: 0, official: "Managing occupancy and assessing disposal timelines.", type: "Value-Add Multi", vibe: "vibe-defensive",
+                milestones: [{n: "Acquisition", s: "done"}, {n: "Renovation", s: "done"}, {n: "Stabilization", s: "active"}, {n: "Disposition", s: "pending"}],
+                details: "【In-Depth Update】: The project is currently navigating the risk-digestion phase following macro carry-cost shifts. Investor Relations is strictly overseeing the property management mandate to optimize NOI (Net Operating Income) and reduce vacancy rates before initiating a structured exit. The primary goal remains 100% basis recovery."
             }
         ];
 
         let allocChartInstance = null;
+        let proChartInstance = null;
 
         function showSection(id) {
             try {
@@ -432,19 +430,32 @@
             } catch (e) { console.error("Nav error:", e); }
         }
 
-        // 渲染包含时间轴的项目
+        // 展开/收起项目详情
+        window.toggleProjectDetails = function(idx) {
+            const detailDiv = document.getElementById(`proj-details-${idx}`);
+            const icon = document.getElementById(`proj-icon-${idx}`);
+            if(detailDiv.classList.contains('hidden')) {
+                detailDiv.classList.remove('hidden');
+                icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+            } else {
+                detailDiv.classList.add('hidden');
+                icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+            }
+        }
+
+        // 渲染包含时间轴、详情折叠、Agora链接的项目
         function renderPortfolio() {
             const list = document.getElementById('portfolioList');
             if(!list) return;
             
-            list.innerHTML = PROJECTS.map(p => {
+            list.innerHTML = PROJECTS.map((p, idx) => {
                 // 构建时间轴 HTML
-                const timelineHtml = p.milestones.map((m, idx) => {
+                const timelineHtml = p.milestones.map((m, mIdx) => {
                     let color = m.s === 'done' ? 'bg-[#b0955b] border-[#b0955b]' : m.s === 'active' ? 'bg-white border-[#b0955b] border-4' : 'bg-stone-200 border-stone-200';
                     let textColor = m.s === 'active' ? 'text-[#b0955b] font-bold' : m.s === 'done' ? 'text-stone-700 font-bold' : 'text-stone-400';
-                    let line = idx < p.milestones.length - 1 ? `<div class="w-12 h-1 ${m.s === 'done' ? 'bg-[#b0955b]' : 'bg-stone-200'} mt-3"></div>` : '';
+                    let line = mIdx < p.milestones.length - 1 ? `<div class="w-8 md:w-12 h-1 ${m.s === 'done' ? 'bg-[#b0955b]' : 'bg-stone-200'} mt-3"></div>` : '';
                     return `
-                        <div class="flex flex-col items-center text-center w-24">
+                        <div class="flex flex-col items-center text-center w-16 md:w-24">
                             <div class="w-6 h-6 rounded-full ${color} z-10 shadow-sm flex items-center justify-center">
                                 ${m.s === 'done' ? '<i class="fa-solid fa-check text-[10px] text-white"></i>' : ''}
                             </div>
@@ -456,83 +467,126 @@
 
                 return `
                 <div class="glass-card overflow-hidden group hover:shadow-lg transition-all ${p.vibe} rounded-[2rem]">
-                    <div class="p-8 flex flex-col lg:flex-row gap-8 items-center">
-                        <div class="lg:w-1/4 border-r border-stone-100 pr-6">
-                            <span class="text-[9px] font-black uppercase tracking-[0.2em] text-[#b0955b] bg-[#f3eee4] px-2 py-1 rounded">${p.type}</span>
-                            <h4 class="text-xl font-black text-[#0a0a0b] mt-4 mb-2 leading-tight uppercase italic">${p.name}</h4>
-                            <p class="text-sm font-mono font-bold text-[#17433a] border-b border-stone-100 pb-2">$${p.principal.toLocaleString()}</p>
-                            ${p.dist > 0 ? `<p class="text-xs font-mono font-bold text-[#b0955b] mt-2">+ $${p.dist.toLocaleString()} Dist.</p>` : ''}
-                        </div>
-                        
-                        <div class="lg:w-1/2 flex justify-center items-start pt-2">
-                            <!-- 时间轴渲染 -->
-                            <div class="flex items-start justify-center w-full">
-                                ${timelineHtml}
+                    <div class="p-8">
+                        <div class="flex flex-col lg:flex-row gap-8 items-center">
+                            <div class="lg:w-1/4 border-b lg:border-b-0 lg:border-r border-stone-100 pb-4 lg:pb-0 lg:pr-6 w-full text-center lg:text-left">
+                                <span class="text-[9px] font-black uppercase tracking-[0.2em] text-[#b0955b] bg-[#f3eee4] px-2 py-1 rounded">${p.type}</span>
+                                <h4 class="text-xl font-black text-[#0a0a0b] mt-4 mb-2 leading-tight uppercase italic">${p.name}</h4>
+                                <p class="text-sm font-mono font-bold text-[#17433a] border-b border-stone-100 pb-2">$${p.principal.toLocaleString()}</p>
+                                ${p.dist > 0 ? `<p class="text-xs font-mono font-bold text-[#b0955b] mt-2">+ $${p.dist.toLocaleString()} Dist.</p>` : ''}
+                            </div>
+                            
+                            <div class="lg:w-1/2 flex justify-center items-start pt-2 w-full">
+                                <!-- 时间轴渲染 -->
+                                <div class="flex items-start justify-center w-full">
+                                    ${timelineHtml}
+                                </div>
+                            </div>
+
+                            <div class="lg:w-1/4 w-full flex flex-col gap-3">
+                                <button onclick="window.toggleProjectDetails(${idx})" class="w-full py-3 bg-stone-50 hover:bg-stone-100 border border-stone-200 rounded-xl text-xs font-bold text-stone-700 transition-colors flex items-center justify-center gap-2">
+                                    View Detailed Updates <i id="proj-icon-${idx}" class="fa-solid fa-chevron-down"></i>
+                                </button>
+                                
+                                <!-- 【功能 1】Agora 统一文件库入口 -->
+                                <a href="https://realinternational.portal.agorareal.com/#/login?redirectUrl=%2F" target="_blank" class="w-full py-3 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl text-xs font-bold text-blue-700 transition-colors flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-file-shield text-blue-500"></i> Access Agora Portal
+                                </a>
                             </div>
                         </div>
-
-                        <div class="lg:w-1/4 bg-stone-50 p-4 rounded-xl border border-stone-200 text-xs text-stone-600 italic font-medium leading-relaxed">
-                            "${p.official}"
+                        
+                        <!-- 展开的详细更新内容 -->
+                        <div id="proj-details-${idx}" class="hidden mt-6 pt-6 border-t border-stone-100">
+                            <div class="bg-white border border-[#b0955b]/20 p-6 rounded-2xl shadow-sm">
+                                <p class="text-[10px] font-black text-[#17433a] uppercase mb-2 tracking-widest"><i class="fa-solid fa-bolt-lightning text-[#b0955b] mr-1"></i> Asset Management Inside Track</p>
+                                <p class="text-sm text-stone-700 leading-relaxed">${p.details}</p>
+                            </div>
                         </div>
                     </div>
                 </div>`;
             }).join('');
         }
 
-        // 渲染公司新闻
+        // 渲染公司新闻 (直接指向官网)
         function renderNews() {
             const grid = document.getElementById('newsGrid');
             if(!grid) return;
             
-            // Note for Anna: If you want to fetch real WP posts from your site, uncomment the block below and adjust URL.
-            /*
-            fetch('https://realinternational.com/wp-json/wp/v2/posts?per_page=3')
-              .then(res => res.json())
-              .then(posts => { ... map posts to grid ... })
-            */
-
             grid.innerHTML = COMPANY_NEWS_DATA.map(n => `
-                <div class="glass-card p-8 space-y-4 group hover:shadow-lg transition-all flex flex-col justify-between">
+                <div class="glass-card p-8 space-y-4 group hover:shadow-lg transition-all flex flex-col justify-between border-l-4 border-transparent hover:border-[#b0955b]">
                     <div>
                         <div class="flex justify-between items-center mb-4">
                             <span class="text-[9px] font-black uppercase tracking-[0.2em] text-[#b0955b] bg-[#17433a] px-2 py-1 rounded">${n.cat}</span>
                             <span class="text-[9px] font-black uppercase text-stone-400 italic">${n.date}</span>
                         </div>
-                        <h4 class="text-base font-black text-[#0a0a0b] leading-tight mb-2">${n.title}</h4>
-                        <p class="text-[11px] text-[#717375] leading-relaxed font-medium">Excerpt: ${n.summary}</p>
+                        <h4 class="text-xl font-black text-[#0a0a0b] leading-tight mb-3">${n.title}</h4>
+                        <p class="text-xs text-[#717375] leading-relaxed font-medium">Excerpt: ${n.summary}</p>
                     </div>
-                    <div class="pt-4 mt-4 border-t border-stone-200">
+                    <div class="pt-4 mt-6 border-t border-stone-200">
                         <a href="${n.link}" target="_blank" class="text-[10px] font-black text-blue-600 uppercase hover:underline flex items-center gap-1 italic tracking-widest">READ ON REALINTERNATIONAL.COM <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
                     </div>
                 </div>`).join('');
         }
 
-        // 【功能 2】退出计算器逻辑
-        function calculateExit() {
-            const year = parseInt(document.getElementById('exit-year-slider').value);
-            document.getElementById('year-display').innerText = year;
-            
-            // 简单拟合算法：持有越久，Multiple越高，IRR轻微衰减/平稳
-            const yearsHeld = year - 2025; // Base year 2025
-            
-            let multiple = 1.0;
-            let irr = 0;
+        // THREE-YEAR HORIZON SIMULATION ENGINE (PROFIT ONLY)
+        function runSim() {
+            try {
+                let monthly = 0; 
+                let profit = 0; 
+                let bals = { lease: 800000, dev: 495080, comm: 450000, debt: 186786 };
 
-            if (year === 2026) { multiple = 1.25; irr = 25.0; }
-            else if (year === 2027) { multiple = 1.48; irr = 18.5; }
-            else if (year === 2028) { multiple = 1.75; irr = 16.2; }
-            else if (year === 2029) { multiple = 1.95; irr = 14.8; }
-            else if (year === 2030) { multiple = 2.20; irr = 14.0; }
+                const chkMonthly = document.getElementById('chk-monthly');
+                const chkNote = document.getElementById('chk-note');
+                const chkGt48 = document.getElementById('chk-gt48');
+                const chkMueller = document.getElementById('chk-mueller');
 
-            document.getElementById('calc-multiple').innerText = multiple.toFixed(2) + 'x';
-            document.getElementById('calc-irr').innerText = irr.toFixed(1) + '%';
+                // 8% Lending - Generates Monthly Cash Flow
+                if(chkMonthly && chkMonthly.checked) {
+                    const v = parseFloat(document.getElementById('val-monthly').value) || 0;
+                    monthly += (v * 0.08) / 12; 
+                    profit += (v * 0.08 * 3); // 3 yrs interest profit
+                    bals.debt += v;
+                }
+                
+                // 15% Accrued Note - 0 Monthly, 1.45x multiple means 0.45x profit
+                if(chkNote && chkNote.checked) {
+                    const v = parseFloat(document.getElementById('val-note').value) || 0;
+                    profit += (v * 0.45); 
+                    bals.debt += v;
+                }
+                
+                // GT-48 - 0 Monthly, 1.43x multiple means 0.43x profit
+                if(chkGt48 && chkGt48.checked) {
+                    const v = parseFloat(document.getElementById('val-gt48').value) || 0;
+                    profit += (v * 0.43); 
+                    bals.dev += v;
+                }
+                
+                // Mueller - 0 Monthly, 1.25x Multiple means 0.25x profit
+                if(chkMueller && chkMueller.checked) {
+                    const v = parseFloat(document.getElementById('val-mueller').value) || 0;
+                    profit += (v * 0.25); 
+                    bals.comm += v;
+                }
+
+                const resMonthly = document.getElementById('res-monthly');
+                const resEquity = document.getElementById('res-equity');
+                
+                if(resMonthly) resMonthly.innerText = '+$' + Math.round(monthly).toLocaleString();
+                if(resEquity) resEquity.innerText = '+$' + Math.round(profit).toLocaleString();
+
+                if(proChartInstance) {
+                    proChartInstance.data.datasets[0].data = Object.values(bals);
+                    proChartInstance.update();
+                }
+            } catch (e) { console.error("Simulation error:", e); }
         }
 
         window.onload = function() {
             try {
+                showSection('overview');
                 renderPortfolio(); 
                 renderNews();
-                calculateExit(); // Init calculator
                 
                 const allocCtx = document.getElementById('allocationChart')?.getContext('2d');
                 if(allocCtx) {
@@ -541,6 +595,17 @@
                         options: { maintainAspectRatio: false, cutout: '80%', plugins: { legend: { position: 'right', labels: { usePointStyle: true, padding: 15, font: { size: 10, weight: 'bold' } } } } }
                     });
                 }
+                
+                const proCtx = document.getElementById('proformaChart')?.getContext('2d');
+                if(proCtx) {
+                    proChartInstance = new Chart(proCtx, {
+                        type: 'pie', data: { labels: ['Stabilized', 'Development', 'Commercial', 'Defensive'], datasets: [{ data: [800000, 495080, 450000, 186786], backgroundColor: ['#17433a', '#b0955b', '#99b2ac', '#717375'], borderWidth: 2, borderColor: '#ffffff' }] },
+                        options: { maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                    });
+                }
+                
+                runSim();
+
             } catch (e) { console.error("Init error:", e); }
         };
     </script>
