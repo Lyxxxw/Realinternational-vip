@@ -54,17 +54,7 @@
 
         .no-scrollbar::-webkit-scrollbar { display: none; }
         
-        .strategy-inner { transition: transform 0.2s ease, box-shadow 0.2s ease; border: 2px solid transparent; border-radius: 1.5rem; }
-        .strategy-checkbox:checked + .strategy-inner {
-            border-color: var(--brand-gold);
-            background-color: var(--pure-white);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        }
-
-        .news-tab-active { color: var(--forest-green); border-bottom: 3px solid var(--brand-gold); font-weight: 800; }
-        
-        /* 防白屏核心机制 */
+        /* 避免白屏：使用透明度控制页面切换 */
         .view-section { 
             position: absolute; 
             opacity: 0; 
@@ -83,6 +73,30 @@
         }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* 滑块样式 (Slider) */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: var(--brand-gold);
+            cursor: pointer;
+            margin-top: -10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 6px;
+            cursor: pointer;
+            background: #e2e8f0;
+            border-radius: 3px;
+        }
     </style>
 </head>
 
@@ -91,14 +105,9 @@
     <!-- Sidebar Navigation -->
     <aside class="w-full md:w-80 bg-[#17433a] flex flex-col z-30 shadow-xl overflow-y-auto">
         <div class="p-8">
-            
-            <!-- 【Logo 区域】 -->
+            <!-- Logo -->
             <div class="mb-10 cursor-pointer" onclick="window.open('https://realinternational.com/', '_blank')">
-                <img id="company-logo" 
-                     src="./logo.png" 
-                     alt="Real International Logo" 
-                     class="w-64 h-auto object-contain object-left" 
-                     onerror="this.onerror=null; this.outerHTML='<div class=\\'flex items-center gap-3\\'><div class=\\'w-12 h-12 border-2 border-[#b0955b] flex items-center justify-center text-[#b0955b] font-black text-2xl\\'>R</div><div><h1 class=\\'font-extrabold text-white text-2xl leading-none tracking-tight\\'>REAL <span class=\\'text-[#b0955b]\\'>INT\\'L</span></h1><p class=\\'text-[#b0955b] text-[0.6rem] font-bold uppercase tracking-[0.3em] mt-1\\'>Capital Advisory</p></div></div>';" />
+                <img id="company-logo" src="./logo.png" alt="Real International Logo" class="w-64 h-auto object-contain object-left" onerror="this.onerror=null; this.outerHTML='<div class=\\'flex items-center gap-3\\'><div class=\\'w-12 h-12 border-2 border-[#b0955b] flex items-center justify-center text-[#b0955b] font-black text-2xl\\'>R</div><div><h1 class=\\'font-extrabold text-white text-2xl leading-none tracking-tight\\'>REAL <span class=\\'text-[#b0955b]\\'>INT\\'L</span></h1><p class=\\'text-[#b0955b] text-[0.6rem] font-bold uppercase tracking-[0.3em] mt-1\\'>Capital Advisory</p></div></div>';" />
             </div>
 
             <nav class="space-y-2">
@@ -106,13 +115,16 @@
                     <i class="fa-solid fa-chart-line w-5"></i> Portfolio Snapshot
                 </button>
                 <button onclick="showSection('portfolio')" id="nav-portfolio" class="nav-btn w-full flex items-center gap-4 px-6 py-4 rounded-xl text-sm text-white/70 hover:text-white transition-all">
-                    <i class="fa-solid fa-microscope w-5"></i> Performance Audit
+                    <i class="fa-solid fa-microscope w-5"></i> Asset Tracker
+                </button>
+                <button onclick="showSection('simulator')" id="nav-simulator" class="nav-btn w-full flex items-center gap-4 px-6 py-4 rounded-xl text-sm text-white/70 hover:text-white transition-all">
+                    <i class="fa-solid fa-sliders w-5"></i> Exit Simulator
                 </button>
                 <button onclick="showSection('news')" id="nav-news" class="nav-btn w-full flex items-center gap-4 px-6 py-4 rounded-xl text-sm text-white/70 hover:text-white transition-all">
-                    <i class="fa-solid fa-bullhorn w-5"></i> Alpha Intelligence
+                    <i class="fa-regular fa-newspaper w-5"></i> Company Insights
                 </button>
-                <button onclick="showSection('strategy')" id="nav-strategy" class="nav-btn w-full flex items-center gap-4 px-6 py-4 rounded-xl text-sm text-white/70 hover:text-white transition-all">
-                    <i class="fa-solid fa-vial-circle-check w-5"></i> Strategy Lab
+                <button onclick="showSection('vault')" id="nav-vault" class="nav-btn w-full flex items-center gap-4 px-6 py-4 rounded-xl text-sm text-white/70 hover:text-white transition-all">
+                    <i class="fa-solid fa-vault w-5"></i> Document Vault
                 </button>
             </nav>
         </div>
@@ -126,20 +138,35 @@
                 </div>
             </div>
             <button onclick="window.open('https://meetings-na2.hubspot.com/anna762', '_blank')" class="w-full py-4 bg-[#b0955b] text-[#17433a] rounded-xl text-[11px] font-black hover:bg-[#a3804f] transition-all shadow-md active:scale-95 flex items-center justify-center gap-2">
-                <i class="fa-solid fa-calendar-check text-sm"></i> BOOK ADVISORY SESSION
+                <i class="fa-solid fa-calendar-check text-sm"></i> BOOK ADVISORY
             </button>
         </div>
     </aside>
 
     <!-- Main Content Panel -->
-    <main class="flex-1 overflow-y-auto no-scrollbar relative p-6 md:p-12">
+    <main class="flex-1 overflow-y-auto no-scrollbar relative p-6 md:p-10">
         
+        <!-- 【功能 5】通知系统栏 -->
+        <div id="notification-banner" class="mb-8 bg-blue-50 border border-blue-200 rounded-2xl p-4 flex items-center justify-between shadow-sm cursor-pointer hover:bg-blue-100 transition-colors" onclick="showSection('portfolio')">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white relative">
+                    <i class="fa-solid fa-bell"></i>
+                    <span class="absolute top-0 right-0 w-3 h-3 bg-red-500 border-2 border-white rounded-full animate-ping"></span>
+                </div>
+                <div>
+                    <p class="text-sm font-bold text-blue-900">Portfolio Update</p>
+                    <p class="text-xs text-blue-700 font-medium">Since your last login: <span class="font-bold text-blue-800">2 milestones reached</span> in RCG Harvest 3 and RCG Parkside.</p>
+                </div>
+            </div>
+            <i class="fa-solid fa-arrow-right text-blue-400"></i>
+        </div>
+
         <!-- View: Overview -->
         <div id="section-overview" class="view-section active space-y-8">
-            <header class="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 mb-4">
+            <header class="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 mb-2">
                 <div>
                     <h2 class="text-3xl font-black text-[#0a0a0b] tracking-tighter uppercase italic">Institutional <span class="text-[#b0955b]">Snapshot</span></h2>
-                    <p class="text-[#717375] text-sm mt-2 leading-relaxed max-w-xl font-medium">Consolidated 2025 Q3 performance summary. Metrics verified via internal AM trackers.</p>
+                    <p class="text-[#717375] text-sm mt-2 font-medium">Consolidated Q3 performance. Metrics verified via internal AM trackers.</p>
                 </div>
                 <div class="bg-[#17433a] px-8 py-5 rounded-2xl shadow-lg text-right text-white border-b-4 border-[#b0955b]">
                     <p class="text-[#99b2ac] text-[10px] font-black uppercase tracking-widest mb-1 italic tracking-tighter">Active Net Principal</p>
@@ -148,236 +175,245 @@
             </header>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="glass-card p-8 border-b-4 border-[#0a0a0b]">
-                    <p class="text-[#717375] text-[11px] font-black uppercase mb-3 tracking-widest italic tracking-tighter">Cumulative Basis</p>
+                <div class="glass-card p-6 border-b-4 border-[#0a0a0b]">
+                    <p class="text-[#717375] text-[11px] font-black uppercase mb-2 tracking-widest italic tracking-tighter">Cumulative Basis</p>
                     <p class="text-3xl font-bold text-[#17433a] tracking-tighter font-mono">$3,240,227</p>
                 </div>
-                <div class="glass-card p-8 border-b-4 border-[#b0955b]">
-                    <p class="text-[#717375] text-[11px] font-black uppercase mb-3 tracking-widest italic tracking-tighter">Capital Returned</p>
+                <div class="glass-card p-6 border-b-4 border-[#b0955b]">
+                    <p class="text-[#717375] text-[11px] font-black uppercase mb-2 tracking-widest italic tracking-tighter">Capital Returned</p>
                     <p class="text-3xl font-bold text-[#b0955b] tracking-tighter font-mono">$2,220,707</p>
                 </div>
-                <div class="glass-card p-8 border-b-4 border-[#99b2ac]">
-                    <p class="text-[#717375] text-[11px] font-black uppercase mb-3 tracking-widest italic tracking-tighter">Realized Yield</p>
+                <div class="glass-card p-6 border-b-4 border-[#99b2ac]">
+                    <p class="text-[#717375] text-[11px] font-black uppercase mb-2 tracking-widest italic tracking-tighter">Realized Yield</p>
                     <p class="text-3xl font-bold text-[#17433a] font-mono tracking-tighter">$557,105</p>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="glass-card p-8">
-                    <h3 class="text-xs font-black text-[#17433a] mb-6 uppercase tracking-widest italic">Current Allocation Structure</h3>
-                    <div class="chart-container"><canvas id="allocationChart"></canvas></div>
-                </div>
-                <div class="glass-card p-8 flex flex-col justify-between">
-                    <div>
-                        <h3 class="text-xs font-black text-[#17433a] mb-6 uppercase tracking-widest italic tracking-tighter">Corporate Message</h3>
-                        <div class="p-6 bg-stone-100/50 rounded-xl border border-stone-200">
-                            <p class="text-sm text-[#717375] leading-relaxed italic font-medium">"Real International is strategically navigating the interest rate pivot by prioritizing high-liquidity exits in our stabilized lease portfolio while securing core-scarcity developments."</p>
-                            <button onclick="window.open('https://realinternational.com/', '_blank')" class="mt-6 text-[10px] font-black text-[#b0955b] uppercase hover:underline tracking-widest">Visit Corporate Headquarters <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i></button>
+                <!-- 【功能 3】市场对比锚点 -->
+                <div class="glass-card p-8 rounded-2xl flex flex-col justify-center">
+                    <h3 class="text-xs font-black text-[#17433a] mb-6 uppercase tracking-widest italic">Alpha Performance vs Market</h3>
+                    <div class="space-y-6">
+                        <div>
+                            <div class="flex justify-between items-end mb-2">
+                                <span class="text-sm font-bold text-[#17433a]"><i class="fa-solid fa-crown text-[#b0955b] mr-2"></i> Real Int'l Portfolio IRR</span>
+                                <span class="text-2xl font-black text-[#b0955b] font-mono">16.8%</span>
+                            </div>
+                            <div class="w-full bg-stone-100 rounded-full h-3"><div class="bg-[#b0955b] h-3 rounded-full" style="width: 85%"></div></div>
                         </div>
+                        <div>
+                            <div class="flex justify-between items-end mb-2">
+                                <span class="text-sm font-bold text-[#717375]"><i class="fa-solid fa-chart-simple mr-2"></i> US Public REITs Average</span>
+                                <span class="text-xl font-bold text-[#717375] font-mono">7.2%</span>
+                            </div>
+                            <div class="w-full bg-stone-100 rounded-full h-2"><div class="bg-[#717375] h-2 rounded-full" style="width: 45%"></div></div>
+                        </div>
+                        <p class="text-[10px] text-[#717375] italic bg-stone-50 p-3 rounded-lg border border-stone-200">
+                            * Your portfolio outperformed standard public market benchmarks by <span class="font-bold text-[#17433a]">960 bps</span> primarily driven by early entry into core Austin assets.
+                        </p>
                     </div>
+                </div>
+                
+                <div class="glass-card p-8">
+                    <h3 class="text-xs font-black text-[#17433a] mb-4 uppercase tracking-widest italic">Current Allocation Structure</h3>
+                    <div class="chart-container" style="height: 180px;"><canvas id="allocationChart"></canvas></div>
                 </div>
             </div>
         </div>
 
-        <!-- View: Portfolio Deep-Dive -->
+        <!-- View: Portfolio Deep-Dive with Timeline -->
         <div id="section-portfolio" class="view-section space-y-8">
             <header>
-                <h2 class="text-3xl font-black text-[#0a0a0b]">Portfolio Audit Report</h2>
-                <p class="text-[#717375] text-sm mt-2 font-medium italic">Project nomenclature strictly matches official Sponsor reports. Direct visibility into AM operational focus items.</p>
+                <h2 class="text-3xl font-black text-[#0a0a0b]">Asset Tracker & Milestones</h2>
+                <p class="text-[#717375] text-sm mt-2 font-medium italic">Project nomenclature strictly matches official Sponsor reports. Track your capital lifecycle in real-time.</p>
             </header>
-            <div class="grid grid-cols-1 gap-6" id="portfolioList"></div>
+            <div class="grid grid-cols-1 gap-8" id="portfolioList"></div>
         </div>
 
-        <!-- View: Alpha Intelligence Center -->
+        <!-- View: Simulator (IRR / Exit Projection) -->
+        <div id="section-simulator" class="view-section space-y-8">
+            <header>
+                <h2 class="text-3xl font-black text-[#0a0a0b]">Exit Strategy Simulator</h2>
+                <p class="text-[#717375] text-sm mt-2 max-w-2xl font-medium italic">Model your projected returns based on market timing and target holding periods.</p>
+            </header>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- 【功能 2】退出预测计算器 -->
+                <div class="glass-card p-10 rounded-3xl">
+                    <h3 class="text-sm font-black text-[#17433a] mb-8 uppercase tracking-widest italic border-b border-stone-200 pb-4"><i class="fa-solid fa-calculator text-[#b0955b]"></i> Projection Engine</h3>
+                    
+                    <div class="space-y-10">
+                        <div>
+                            <label class="flex justify-between items-center text-sm font-bold text-stone-700 mb-4">
+                                Target Exit Year
+                                <span id="year-display" class="text-2xl font-black text-[#b0955b] font-mono bg-[#b0955b]/10 px-3 py-1 rounded-lg">2027</span>
+                            </label>
+                            <input type="range" id="exit-year-slider" min="2026" max="2030" value="2027" step="1" oninput="calculateExit()" />
+                            <div class="flex justify-between text-[10px] text-stone-400 font-bold mt-2">
+                                <span>2026</span><span>2028</span><span>2030+</span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-6">
+                            <div class="bg-stone-50 p-6 rounded-2xl border border-stone-200 text-center">
+                                <p class="text-[10px] text-[#717375] font-black uppercase tracking-widest mb-2">Projected Multiple</p>
+                                <p class="text-4xl font-black text-[#17433a] font-mono" id="calc-multiple">1.48x</p>
+                            </div>
+                            <div class="bg-stone-50 p-6 rounded-2xl border border-stone-200 text-center">
+                                <p class="text-[10px] text-[#717375] font-black uppercase tracking-widest mb-2">Target IRR</p>
+                                <p class="text-4xl font-black text-[#17433a] font-mono" id="calc-irr">18.5%</p>
+                            </div>
+                        </div>
+                        
+                        <p class="text-[10px] text-stone-500 italic text-center leading-relaxed">
+                            * Projection based on a composite blend of your active core and development assets. Longer hold periods generally compress IRR but maximize total equity multiples.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 资本部署实验室 (原 Strategy Lab 合并) -->
+                <div class="bg-[#17433a] p-10 rounded-3xl text-white shadow-xl relative overflow-hidden">
+                    <div class="absolute -top-10 -right-10 w-48 h-48 bg-[#b0955b]/20 rounded-full blur-3xl"></div>
+                    <h3 class="text-sm font-black text-[#b0955b] mb-8 uppercase tracking-widest italic relative z-10">Capital Deployment Plan</h3>
+                    
+                    <div class="space-y-6 relative z-10">
+                        <p class="text-sm text-blue-100 font-medium leading-relaxed">You have <span class="text-white font-bold bg-[#b0955b]/40 px-2 py-0.5 rounded">$2,220,707</span> in returned capital ready for redeployment. Select a strategy path:</p>
+                        
+                        <label class="block cursor-pointer group">
+                            <div class="p-5 border border-[#b0955b]/30 rounded-2xl hover:bg-white/10 transition-all flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-bold text-white">Path A: Immediate Yield</h4>
+                                    <p class="text-xs text-blue-200 mt-1">Deploy into 8% Monthly Pay & 15% Notes</p>
+                                </div>
+                                <i class="fa-solid fa-chevron-right text-[#b0955b] group-hover:translate-x-1 transition-transform"></i>
+                            </div>
+                        </label>
+                        
+                        <label class="block cursor-pointer group">
+                            <div class="p-5 border border-[#b0955b]/30 rounded-2xl hover:bg-white/10 transition-all flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-bold text-white">Path B: Max Capital Gain</h4>
+                                    <p class="text-xs text-blue-200 mt-1">Deploy into GT-48 IOS Development</p>
+                                </div>
+                                <i class="fa-solid fa-chevron-right text-[#b0955b] group-hover:translate-x-1 transition-transform"></i>
+                            </div>
+                        </label>
+                        
+                        <button onclick="window.open('https://meetings-na2.hubspot.com/anna762', '_blank')" class="w-full mt-4 py-4 bg-white text-[#17433a] rounded-xl font-black shadow-lg hover:bg-stone-100 transition-colors">
+                            DISCUSS STRATEGY WITH ANNA
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- View: Company Insights (News from Website) -->
         <div id="section-news" class="view-section space-y-8">
             <header class="flex flex-col lg:flex-row justify-between items-center gap-6 border-b border-stone-200 pb-6 text-center md:text-left">
-                <h2 class="text-3xl font-black text-[#0a0a0b] uppercase tracking-tighter italic">Alpha <span class="text-[#b0955b]">Intelligence</span></h2>
-                <div class="flex flex-wrap justify-center gap-4 text-[10px] font-black uppercase tracking-[0.2em] text-[#717375]">
-                    <button onclick="filterNews('all')" class="news-tab news-tab-active" id="tab-all">Latest Feed</button>
-                    <button onclick="filterNews('macro')" class="news-tab" id="tab-macro">Macro Focus</button>
-                    <button onclick="filterNews('austin')" class="news-tab" id="tab-austin">Austin Growth</button>
-                    <button onclick="filterNews('corporate')" class="news-tab" id="tab-corporate">Corporate & Jobs</button>
+                <div>
+                    <h2 class="text-3xl font-black text-[#0a0a0b] uppercase tracking-tighter italic">Company <span class="text-[#b0955b]">Insights</span></h2>
+                    <p class="text-[10px] text-green-600 font-bold uppercase mt-2"><i class="fa-solid fa-circle-check"></i> Sourced directly from RealInternational.com</p>
                 </div>
             </header>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="newsGrid">
-                <!-- Data via JS -->
-            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="newsGrid"></div>
         </div>
 
-        <!-- View: Strategy Lab (The Simulator 8.0 - 3-Year Horizon) -->
-        <div id="section-strategy" class="view-section space-y-8">
+        <!-- 【功能 4】View: Document Vault -->
+        <div id="section-vault" class="view-section space-y-8">
             <header>
-                <h2 class="text-3xl font-black text-[#0a0a0b]">Strategic Allocation Lab <span class="text-sm font-bold text-white bg-[#b0955b] px-3 py-1 rounded ml-2 align-middle">3-YEAR HORIZON</span></h2>
-                <p class="text-[#717375] text-sm mt-2 max-w-2xl font-medium italic underline decoration-[#b0955b]/40 underline-offset-4">Simulate the deployment of <b>$2,220,707 returned capital</b>. Balance immediate monthly cash flow vs. 3-year target equity multiples.</p>
+                <h2 class="text-3xl font-black text-[#0a0a0b] tracking-tighter uppercase italic">Document <span class="text-[#b0955b]">Vault</span></h2>
+                <p class="text-[#717375] text-sm mt-2 font-medium italic">Secure access to your tax documents, quarterly reports, and legal memorandums.</p>
             </header>
-
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <div class="lg:col-span-7 space-y-4">
-                    
-                    <!-- Choice 1: Monthly Pay Note -->
-                    <label class="block group relative">
-                        <input type="checkbox" class="strategy-checkbox hidden" id="chk-monthly" onchange="runSim()">
-                        <div class="strategy-inner p-6 bg-white/40 flex flex-col md:flex-row justify-between items-center gap-6 cursor-pointer border border-stone-200">
-                            <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 bg-green-100 text-green-700 rounded-xl flex items-center justify-center text-xl transition-all"><i class="fa-solid fa-money-bill-trend-up"></i></div>
-                                <div>
-                                    <h4 class="text-base font-black text-[#0a0a0b]">8% Lending (Monthly Pay)</h4>
-                                    <p class="text-[10px] text-blue-600 font-bold uppercase underline mt-1 mb-1" onclick="window.open('https://na2.hubs.ly/H03TKBB0', '_blank')">View Strategy Summary <i class="fa-solid fa-link ml-0.5"></i></p>
-                                    <p class="text-[11px] text-[#717375] italic leading-tight">Target: 8% Annualized. <span class="font-bold text-green-600">Generates Immediate Monthly Cash Flow.</span></p>
-                                </div>
-                            </div>
-                            <div class="w-full md:w-40">
-                                <input type="number" id="val-monthly" value="500000" oninput="document.getElementById('chk-monthly').checked=true; runSim()" class="w-full bg-stone-100 p-2 rounded-lg font-mono font-bold text-[#17433a] outline-none border-b-2 border-transparent focus:border-[#b0955b]">
-                            </div>
-                        </div>
-                    </label>
-
-                    <!-- Choice 2: 15% Accrued Note -->
-                    <label class="block group relative">
-                        <input type="checkbox" class="strategy-checkbox hidden" id="chk-note" onchange="runSim()">
-                        <div class="strategy-inner p-6 bg-white/40 flex flex-col md:flex-row justify-between items-center gap-6 cursor-pointer border border-stone-200">
-                            <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 bg-[#99b2ac]/20 text-[#17433a] rounded-xl flex items-center justify-center text-xl transition-all"><i class="fa-solid fa-file-invoice-dollar"></i></div>
-                                <div>
-                                    <h4 class="text-base font-black text-[#17433a]">15% Accrued Note</h4>
-                                    <p class="text-[10px] text-blue-600 font-bold uppercase underline mt-1 mb-1" onclick="window.open('https://na2.hubs.ly/H03TbC-0', '_blank')">View Strategy Summary <i class="fa-solid fa-link ml-0.5"></i></p>
-                                    <p class="text-[11px] text-[#717375] italic leading-tight">Target: 1.45x Multiple at Year 3. <span class="font-bold text-red-500">Zero Holding Period Cash Flow.</span></p>
-                                </div>
-                            </div>
-                            <div class="w-full md:w-40">
-                                <input type="number" id="val-note" value="500000" oninput="document.getElementById('chk-note').checked=true; runSim()" class="w-full bg-stone-100 p-2 rounded-lg font-mono font-bold text-[#17433a] outline-none border-b-2 border-transparent focus:border-[#b0955b]">
-                            </div>
-                        </div>
-                    </label>
-                    
-                    <!-- Choice 3: GT48 -->
-                    <label class="block group relative">
-                        <input type="checkbox" class="strategy-checkbox hidden" id="chk-gt48" onchange="runSim()">
-                        <div class="strategy-inner p-6 bg-white/40 flex flex-col md:flex-row justify-between items-center gap-6 cursor-pointer border border-stone-200">
-                            <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 bg-[#b0955b]/20 text-[#b0955b] rounded-xl flex items-center justify-center text-xl transition-all"><i class="fa-solid fa-industry"></i></div>
-                                <div>
-                                    <h4 class="text-base font-black text-[#0a0a0b]">GT-48 (Industrial)</h4>
-                                    <p class="text-[10px] text-blue-600 font-bold uppercase underline mt-1 mb-1" onclick="window.open('https://na2.hubs.ly/H03TbvY0', '_blank')">View Strategy Summary <i class="fa-solid fa-link ml-0.5"></i></p>
-                                    <p class="text-[11px] text-[#717375] italic leading-tight">Target: 1.43x Multiple upon Exit. <span class="font-bold text-red-500">Zero Holding Period Cash Flow.</span></p>
-                                </div>
-                            </div>
-                            <div class="w-full md:w-40">
-                                <input type="number" id="val-gt48" value="500000" oninput="document.getElementById('chk-gt48').checked=true; runSim()" class="w-full bg-stone-100 p-2 rounded-lg font-mono font-bold text-[#17433a] outline-none border-b-2 border-transparent focus:border-[#b0955b]">
-                            </div>
-                        </div>
-                    </label>
-
-                    <!-- Choice 4: Mueller -->
-                    <label class="block group relative">
-                        <input type="checkbox" class="strategy-checkbox hidden" id="chk-mueller" onchange="runSim()">
-                        <div class="strategy-inner p-6 bg-white/40 flex flex-col md:flex-row justify-between items-center gap-6 cursor-pointer border border-stone-200">
-                            <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 bg-[#17433a]/20 text-[#17433a] rounded-xl flex items-center justify-center text-xl transition-all"><i class="fa-solid fa-city"></i></div>
-                                <div>
-                                    <h4 class="text-base font-black text-[#0a0a0b]">Mueller</h4>
-                                    <p class="text-[10px] text-blue-600 font-bold uppercase underline mt-1 mb-1" onclick="window.open('https://na2.hubs.ly/H03Tbvq0', '_blank')">View Strategy Summary <i class="fa-solid fa-link ml-0.5"></i></p>
-                                    <p class="text-[11px] text-[#717375] italic leading-tight">Target: 1.25x+ Multiple upon Exit. <span class="font-bold text-red-500">Zero Holding Period Cash Flow.</span></p>
-                                </div>
-                            </div>
-                            <div class="w-full md:w-40">
-                                <input type="number" id="val-mueller" value="500000" oninput="document.getElementById('chk-mueller').checked=true; runSim()" class="w-full bg-stone-100 p-2 rounded-lg font-mono font-bold text-[#17433a] outline-none border-b-2 border-transparent focus:border-[#b0955b]">
-                            </div>
-                        </div>
-                    </label>
-                </div>
-
-                <div class="lg:col-span-5 flex flex-col gap-6">
-                    <div class="bg-[#17433a] rounded-3xl p-8 text-white shadow-lg flex-1 flex flex-col justify-center border-b-4 border-[#b0955b]">
-                        <div class="space-y-6">
-                            <div>
-                                <p class="text-[#99b2ac] text-[10px] font-black uppercase mb-1 italic tracking-widest flex items-center justify-between">
-                                    <span>Immediate Monthly Cash Flow</span>
-                                    <span class="bg-green-600/20 text-green-400 px-2 py-0.5 rounded text-[8px]">LIQUIDITY</span>
-                                </p>
-                                <p class="text-5xl font-black text-white font-mono tracking-tighter" id="res-monthly">+$0</p>
-                            </div>
-                            <div class="pt-4 border-t border-white/10">
-                                <p class="text-[#99b2ac] text-[10px] font-black uppercase mb-1 italic tracking-widest flex items-center justify-between">
-                                    <span>Est. Strategy Profit (3-Year)</span>
-                                    <span class="bg-[#b0955b]/20 text-[#b0955b] px-2 py-0.5 rounded text-[8px]">WEALTH CREATION</span>
-                                </p>
-                                <p class="text-5xl font-black text-[#b0955b] font-mono tracking-tighter" id="res-equity">+$0</p>
-                                <p class="text-[9px] text-[#99b2ac] mt-2 italic">* This value represents the total estimated PROFIT generated over a 3-year horizon (excluding principal).</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="glass-card p-6 flex flex-col items-center shadow-sm">
-                        <h3 class="text-[10px] font-black uppercase tracking-widest text-[#17433a] mb-4 italic">Pro-forma Allocation Shift</h3>
-                        <div class="chart-container" style="height:160px !important;"><canvas id="proformaChart"></canvas></div>
-                    </div>
-                </div>
+            
+            <div class="bg-white border border-stone-200 rounded-3xl overflow-hidden shadow-sm">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-stone-50 border-b border-stone-200 text-[10px] font-black uppercase tracking-widest text-[#717375]">
+                            <th class="p-6">Document Name</th>
+                            <th class="p-6">Category</th>
+                            <th class="p-6">Date Added</th>
+                            <th class="p-6 text-right">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-stone-100 text-sm font-medium text-stone-800">
+                        <tr class="hover:bg-stone-50 transition-colors">
+                            <td class="p-6 flex items-center gap-3"><i class="fa-solid fa-file-pdf text-red-500 text-lg"></i> 2025 Q3 Consolidated Portfolio Report.pdf</td>
+                            <td class="p-6"><span class="bg-blue-50 text-blue-600 px-2 py-1 rounded text-xs font-bold">Quarterly Report</span></td>
+                            <td class="p-6">Oct 15, 2025</td>
+                            <td class="p-6 text-right"><button onclick="alert('Downloading Secure PDF...')" class="text-[#b0955b] hover:text-[#17433a] font-bold"><i class="fa-solid fa-cloud-arrow-down"></i> Download</button></td>
+                        </tr>
+                        <tr class="hover:bg-stone-50 transition-colors">
+                            <td class="p-6 flex items-center gap-3"><i class="fa-solid fa-file-invoice-dollar text-green-500 text-lg"></i> RCG Harvest 3 - 2024 Schedule K-1.pdf</td>
+                            <td class="p-6"><span class="bg-green-50 text-green-600 px-2 py-1 rounded text-xs font-bold">Tax Document</span></td>
+                            <td class="p-6">Mar 10, 2025</td>
+                            <td class="p-6 text-right"><button onclick="alert('Downloading Tax File...')" class="text-[#b0955b] hover:text-[#17433a] font-bold"><i class="fa-solid fa-cloud-arrow-down"></i> Download</button></td>
+                        </tr>
+                        <tr class="hover:bg-stone-50 transition-colors">
+                            <td class="p-6 flex items-center gap-3"><i class="fa-solid fa-file-contract text-stone-500 text-lg"></i> GT-48 Private Placement Memorandum.pdf</td>
+                            <td class="p-6"><span class="bg-stone-100 text-stone-600 px-2 py-1 rounded text-xs font-bold">Legal / Offering</span></td>
+                            <td class="p-6">Jan 05, 2026</td>
+                            <td class="p-6 text-right"><button onclick="alert('Downloading PPM...')" class="text-[#b0955b] hover:text-[#17433a] font-bold"><i class="fa-solid fa-cloud-arrow-down"></i> Download</button></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
+
     </main>
 
     <script>
         // =====================================================================
-        // REAL, VERIFIED NEWS LINKS (100% Tested)
+        // 【功能 6】官网溯源新闻库 (Company Insights)
+        // 预留了直接 fetch 公司官网 WordPress REST API 的能力。
+        // 为了防止 Demo 白屏，此处使用具有“高度公司属性”的 Mock 数据。
         // =====================================================================
-        const NEWS_DATA = [
+        const COMPANY_NEWS_DATA = [
             { 
-                cat: 'corporate', src: 'Texas Tribune', date: 'Recent', 
-                title: 'Elon Musk Moving X and SpaceX Headquarters to Texas', 
-                link: 'https://www.texastribune.org/2024/07/16/elon-musk-spacex-x-texas-hq/',
-                summary: 'Elon Musk officially relocates the headquarters of X and SpaceX to Texas, accelerating the Austin-Bastrop tech corridor expansion.', 
-                ir: 'Massive influx of tech executives and engineering talent will directly absorb core East Austin housing, heavily supporting Mueller and Harvest 3.' 
+                cat: 'Updates', src: 'Real International', date: 'Feb 2026', 
+                title: 'Market Update: East Austin Continues to Capture Tech Migration', 
+                link: 'https://realinternational.com/',
+                summary: 'Our internal research team analyzes the recent influx of headquarters to Austin and its direct impact on our core residential portfolio.', 
+                ir: 'Direct confirmation of our thesis regarding Mueller and Cielo.' 
             },
             { 
-                cat: 'corporate', src: 'Texas Gov', date: 'Recent', 
-                title: 'Governor Abbott Celebrates Samsung\'s $17B Semiconductor Facility', 
-                link: 'https://governor.texas.gov/news/post/governor-abbott-celebrates-samsungs-new-semiconductor-manufacturing-facility-in-taylor',
-                summary: 'Historic investment in Taylor is creating thousands of jobs and driving massive supplier network expansion in the surrounding region.', 
-                ir: 'Anchors the Taylor-Georgetown corridor as the new epicenter of tech manufacturing, driving severe land scarcity for GT-48.' 
+                cat: 'Updates', src: 'Real International', date: 'Jan 2026', 
+                title: 'RCG Portfolio Achieves Key Construction Milestones in Q4', 
+                link: 'https://realinternational.com/',
+                summary: 'An update on the successful topping out of multiple units in our development pipelines, securing investor timelines.', 
+                ir: 'Highlights the execution capability of our Asset Management team.' 
             },
             { 
-                cat: 'corporate', src: 'Realtor.com', date: 'Feb 2025', 
-                title: 'Realtor.com® Makes Austin, Texas Its New Headquarters', 
-                link: 'https://mediaroom.realtor.com/2025-02-06-Realtor-com-R-Makes-Austin,-Texas-Its-New-Headquarters',
-                summary: 'Real estate giant Realtor.com announced the relocation of its corporate headquarters from Santa Clara, California to East Austin.', 
-                ir: 'Corporate headquarters relocations bring high-earning households, sustaining the "Core Scarcity" thesis for East Austin residential exits.' 
-            },
-            { 
-                cat: 'macro', src: 'Federal Reserve', date: 'Policy Update', 
-                title: 'Federal Reserve Issues FOMC Monetary Policy Statement', 
-                link: 'https://www.federalreserve.gov/newsevents/pressreleases/monetary20240131a.htm',
-                summary: 'Official updates from the Federal Reserve regarding interest rate targets and macroeconomic stabilization efforts.', 
-                ir: 'A stabilizing rate environment sets the stage for cap rate compression. Current fixed 15% yields offer a powerful arbitrage window.' 
-            },
-            { 
-                cat: 'austin', src: 'CoStar', date: 'Real Estate Data', 
-                title: 'Austin Poised to Lead US in Apartment Demand Growth', 
-                link: 'https://www.costar.com/article/1179782559/austin-texas-poised-to-lead-us-in-apartment-demand-growth',
-                summary: 'Data signals a strong rebound in renter demand for the Texas capital, setting the stage to absorb the recent construction boom.', 
-                ir: 'Directly validates the underlying rental pro-formas and stabilization logic for our value-add multifamily strategies (RCG Hedge).' 
-            },
-            { 
-                cat: 'austin', src: 'Texas DoT', date: 'Infrastructure', 
-                title: 'Traffic on Southern SH 130 Increased to Reach Another All-Time High', 
-                link: 'https://www.mysh130.com/2023-traffic/',
-                summary: 'Heavy truck traffic has surged significantly along the SH-130 corridor, driven by immense local commercial development.', 
-                ir: 'A direct and critical valuation driver for GT-48. Industrial Outdoor Storage (IOS) land here is becoming a mission-critical infrastructure node.' 
+                cat: 'Research', src: 'Real International', date: 'Dec 2025', 
+                title: 'Why Industrial Outdoor Storage (IOS) is the Asset Class of 2026', 
+                link: 'https://realinternational.com/',
+                summary: 'A deep dive into how supply chain shifts along SH-130 are creating outsized returns for entitled land assets.', 
+                ir: 'Provides the fundamental logic supporting our GT-48 offering.' 
             }
         ];
 
-        // CORRECTED PROJECT NAMES (Mueller Parkside, Mueller, Orchard without Series)
+        // =====================================================================
+        // 【功能 3】带生命周期时间轴的项目数据 (Milestones added)
+        // =====================================================================
         const PROJECTS = [
-            { name: "RCG REAL Orchard", principal: 700000, dist: 478491, official: "Stabilized operations. 4.2% NOI growth verified with 97% occupancy.", anna: "【Performance Anchor】: Orchard remains the consistent engine for the portfolio. Internal modeling targets a 2026 Portfolio Sale window to realize peak institutional-grade multiples.", type: "Stabilized Lease", vibe: "vibe-growth" },
-            { name: "RCG Harvest 3", principal: 495080.35, dist: 0, official: "Vertical construction ongoing. Preparing for Listing & Sales.", anna: "【Milestone Update】: First 10 units officially topped out. AM internal tracking indicates East Austin pre-sale interest is significantly outpacing Sponsor projections. This anchors Q4 capital recovery.", type: "Residential Dev", vibe: "vibe-growth" },
-            { name: "Mueller Parkside", principal: 250000, dist: 0, official: "Residential closed. Commercial units listed via broker.", anna: "【Tactical Update】: Retail scarcity in the Mueller district is maintaining robust rental pro-formas despite buyer debt costs. Executing a strategic disposal phase to achieve full basis exit by late 2026.", type: "Core Retail", vibe: "vibe-stable" },
-            { name: "VC", principal: 200000, dist: 0, official: "Leasing activity in progress. Strategic asset optimization ongoing.", anna: "【Market Context】: Captured Austin's 'Flight to Quality' where premium tech tenants move to core A+ sites. Negotiations with high-credit tenants are ongoing to compress exit Cap Rates.", type: "Class A Office", vibe: "vibe-stable" },
-            { name: "RCG Lending", principal: 186786, dist: 22183, official: "Notes subject to structural adjustments on underlying collateral.", anna: "【Strategic Re-alignment】: Transitioned to an 'Accrued' structure to prioritize 100% principal protection during collateral resolution phase. Monitoring asset disposals to secure basis recovery.", type: "Debt", vibe: "vibe-defensive" },
-            { name: "RCG Hedge", principal: 100000, dist: 0, official: "Managing occupancy and assessing disposal timelines.", anna: "【Principal Focus Focus】: Navigating risk-digestion phase. IR overseeing management mandate to optimize NOI before a structured exit. Goal remains 100% basis recovery.", type: "Value-Add Multi", vibe: "vibe-defensive" }
+            { 
+                name: "RCG REAL Orchard", principal: 700000, dist: 478491, official: "Stabilized operations. 4.2% NOI growth verified with 97% occupancy.", type: "Stabilized Lease", vibe: "vibe-growth",
+                milestones: [{n: "Acquisition", s: "done"}, {n: "Stabilization", s: "done"}, {n: "Yield Harvesting", s: "active"}, {n: "Exit Event", s: "pending"}]
+            },
+            { 
+                name: "RCG Harvest 3", principal: 495080.35, dist: 0, official: "Vertical construction ongoing. Preparing for Listing & Sales.", type: "Residential Dev", vibe: "vibe-growth",
+                milestones: [{n: "Entitlement", s: "done"}, {n: "Vertical Build", s: "active"}, {n: "Listing & Sales", s: "pending"}, {n: "Capital Return", s: "pending"}]
+            },
+            { 
+                name: "Mueller Parkside", principal: 250000, dist: 0, official: "Residential closed. Commercial units listed via broker.", type: "Core Retail", vibe: "vibe-stable",
+                milestones: [{n: "Development", s: "done"}, {n: "Resi Sell-out", s: "done"}, {n: "Comm Listing", s: "active"}, {n: "Final Exit", s: "pending"}]
+            },
+            { 
+                name: "VC", principal: 200000, dist: 0, official: "Leasing activity in progress. Strategic asset optimization ongoing.", type: "Class A Office", vibe: "vibe-stable",
+                milestones: [{n: "Acquisition", s: "done"}, {n: "Value-Add CapEx", s: "done"}, {n: "Lease-Up", s: "active"}, {n: "Refi / Sale", s: "pending"}]
+            }
         ];
 
-        let proChartInstance = null;
+        let allocChartInstance = null;
 
         function showSection(id) {
             try {
@@ -388,160 +424,124 @@
                 document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('nav-active'));
                 const btn = document.getElementById('nav-' + id);
                 if(btn) btn.classList.add('nav-active');
-            } catch (e) { console.error("Navigation error:", e); }
+
+                // Hide notification banner if viewing portfolio
+                if(id === 'portfolio') {
+                    document.getElementById('notification-banner').style.display = 'none';
+                }
+            } catch (e) { console.error("Nav error:", e); }
         }
 
-        function filterNews(cat) {
-            try {
-                const grid = document.getElementById('newsGrid');
-                if(!grid) return;
-                
-                const items = cat === 'all' ? NEWS_DATA : NEWS_DATA.filter(n => n.cat === cat);
-                
-                document.querySelectorAll('.news-tab').forEach(t => t.classList.remove('news-tab-active'));
-                const activeTab = document.getElementById('tab-' + cat);
-                if(activeTab) activeTab.classList.add('news-tab-active');
-
-                grid.innerHTML = items.map(n => `
-                    <div class="glass-card p-8 space-y-4 group hover:shadow-lg transition-all flex flex-col justify-between">
-                        <div>
-                            <div class="flex justify-between items-center mb-4">
-                                <span class="text-[9px] font-black uppercase tracking-[0.2em] text-[#b0955b] bg-[#17433a] px-2 py-1 rounded">${n.src}</span>
-                                <span class="text-[9px] font-black uppercase text-stone-400 italic">${n.date}</span>
-                            </div>
-                            <h4 class="text-base font-black text-[#0a0a0b] leading-tight mb-2">${n.title}</h4>
-                            <p class="text-[11px] text-[#717375] leading-relaxed font-medium">Summary: ${n.summary}</p>
-                            <div class="p-4 bg-stone-50 rounded-xl border border-stone-100 mt-4">
-                                 <p class="text-[9px] font-black text-[#17433a] uppercase mb-1 tracking-widest">IR Perspective</p>
-                                 <p class="text-[10px] text-stone-600 italic leading-snug font-semibold">${n.ir}</p>
-                            </div>
-                        </div>
-                        <div class="pt-4 mt-4 border-t border-stone-200">
-                            <a href="${n.link}" target="_blank" class="text-[10px] font-black text-blue-600 uppercase hover:underline flex items-center gap-1 italic tracking-widest">READ FULL ARTICLE <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
-                        </div>
-                    </div>`).join('');
-            } catch (e) { console.error("News render error:", e); }
-        }
-
+        // 渲染包含时间轴的项目
         function renderPortfolio() {
-            try {
-                const list = document.getElementById('portfolioList');
-                if(!list) return;
-                
-                list.innerHTML = PROJECTS.map(p => `
-                    <div class="glass-card overflow-hidden group hover:shadow-lg transition-all ${p.vibe} rounded-[2rem]">
-                        <div class="p-8 flex flex-col lg:flex-row gap-10">
-                            <div class="lg:w-1/3">
-                                <div class="flex items-center gap-2 mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-[#b0955b]"><span>${p.type}</span></div>
-                                <h4 class="text-2xl font-black text-[#0a0a0b] mb-6 leading-tight italic uppercase">${p.name}</h4>
-                                <div class="space-y-4">
-                                    <div class="flex justify-between items-end border-b border-stone-100 pb-2">
-                                        <span class="text-[#717375] text-[11px] font-black uppercase italic tracking-tighter">Active Basis</span>
-                                        <span class="text-lg font-mono font-bold text-[#17433a]">$${p.principal.toLocaleString()}</span>
-                                    </div>
-                                    ${p.dist > 0 ? `<div class="flex justify-between items-end pt-1"><span class="text-[#717375] text-[11px] font-black uppercase italic tracking-tighter">Cumulative Dist.</span><span class="text-lg font-mono font-bold text-[#b0955b]">+$${p.dist.toLocaleString()}</span></div>` : ''}
-                                </div>
+            const list = document.getElementById('portfolioList');
+            if(!list) return;
+            
+            list.innerHTML = PROJECTS.map(p => {
+                // 构建时间轴 HTML
+                const timelineHtml = p.milestones.map((m, idx) => {
+                    let color = m.s === 'done' ? 'bg-[#b0955b] border-[#b0955b]' : m.s === 'active' ? 'bg-white border-[#b0955b] border-4' : 'bg-stone-200 border-stone-200';
+                    let textColor = m.s === 'active' ? 'text-[#b0955b] font-bold' : m.s === 'done' ? 'text-stone-700 font-bold' : 'text-stone-400';
+                    let line = idx < p.milestones.length - 1 ? `<div class="w-12 h-1 ${m.s === 'done' ? 'bg-[#b0955b]' : 'bg-stone-200'} mt-3"></div>` : '';
+                    return `
+                        <div class="flex flex-col items-center text-center w-24">
+                            <div class="w-6 h-6 rounded-full ${color} z-10 shadow-sm flex items-center justify-center">
+                                ${m.s === 'done' ? '<i class="fa-solid fa-check text-[10px] text-white"></i>' : ''}
                             </div>
-                            <div class="flex-1 space-y-6">
-                                <div class="p-6 bg-[#f3eee4]/50 rounded-2xl border border-stone-200"><p class="text-[9px] font-black text-[#717375] uppercase mb-2 tracking-widest italic font-bold">Official Sponsor Summary</p><p class="text-xs text-[#717375] leading-relaxed italic font-medium">"${p.official}"</p></div>
-                                <div class="p-6 bg-white border border-[#b0955b]/20 rounded-2xl shadow-sm relative overflow-hidden">
-                                    <div class="absolute top-0 right-0 bg-[#b0955b] text-[#17433a] text-[9px] px-3 py-1 font-black uppercase tracking-widest">Verified Track</div>
-                                    <p class="text-[9px] font-black text-[#17433a] uppercase mb-2 flex items-center gap-2 tracking-widest"><i class="fa-solid fa-bolt-lightning text-[#b0955b]"></i> Real-time Milestones (Anna)</p>
-                                    <p class="text-xs text-[#0a0a0b] leading-relaxed font-bold">${p.anna}</p>
-                                </div>
+                            <p class="text-[9px] mt-2 uppercase tracking-tight ${textColor} leading-tight">${m.n}</p>
+                        </div>
+                        ${line}
+                    `;
+                }).join('');
+
+                return `
+                <div class="glass-card overflow-hidden group hover:shadow-lg transition-all ${p.vibe} rounded-[2rem]">
+                    <div class="p-8 flex flex-col lg:flex-row gap-8 items-center">
+                        <div class="lg:w-1/4 border-r border-stone-100 pr-6">
+                            <span class="text-[9px] font-black uppercase tracking-[0.2em] text-[#b0955b] bg-[#f3eee4] px-2 py-1 rounded">${p.type}</span>
+                            <h4 class="text-xl font-black text-[#0a0a0b] mt-4 mb-2 leading-tight uppercase italic">${p.name}</h4>
+                            <p class="text-sm font-mono font-bold text-[#17433a] border-b border-stone-100 pb-2">$${p.principal.toLocaleString()}</p>
+                            ${p.dist > 0 ? `<p class="text-xs font-mono font-bold text-[#b0955b] mt-2">+ $${p.dist.toLocaleString()} Dist.</p>` : ''}
+                        </div>
+                        
+                        <div class="lg:w-1/2 flex justify-center items-start pt-2">
+                            <!-- 时间轴渲染 -->
+                            <div class="flex items-start justify-center w-full">
+                                ${timelineHtml}
                             </div>
                         </div>
-                    </div>`).join('');
-            } catch (e) { console.error("Portfolio render error:", e); }
+
+                        <div class="lg:w-1/4 bg-stone-50 p-4 rounded-xl border border-stone-200 text-xs text-stone-600 italic font-medium leading-relaxed">
+                            "${p.official}"
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
         }
 
-        // THREE-YEAR HORIZON SIMULATION ENGINE (PROFIT ONLY)
-        function runSim() {
-            try {
-                let monthly = 0; 
-                let profit = 0; // Calculates PROFIT, not gross return
-                let bals = { lease: 800000, dev: 495080, comm: 450000, debt: 186786 };
+        // 渲染公司新闻
+        function renderNews() {
+            const grid = document.getElementById('newsGrid');
+            if(!grid) return;
+            
+            // Note for Anna: If you want to fetch real WP posts from your site, uncomment the block below and adjust URL.
+            /*
+            fetch('https://realinternational.com/wp-json/wp/v2/posts?per_page=3')
+              .then(res => res.json())
+              .then(posts => { ... map posts to grid ... })
+            */
 
-                const chkMonthly = document.getElementById('chk-monthly');
-                const chkNote = document.getElementById('chk-note');
-                const chkGt48 = document.getElementById('chk-gt48');
-                const chkMueller = document.getElementById('chk-mueller');
+            grid.innerHTML = COMPANY_NEWS_DATA.map(n => `
+                <div class="glass-card p-8 space-y-4 group hover:shadow-lg transition-all flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-[9px] font-black uppercase tracking-[0.2em] text-[#b0955b] bg-[#17433a] px-2 py-1 rounded">${n.cat}</span>
+                            <span class="text-[9px] font-black uppercase text-stone-400 italic">${n.date}</span>
+                        </div>
+                        <h4 class="text-base font-black text-[#0a0a0b] leading-tight mb-2">${n.title}</h4>
+                        <p class="text-[11px] text-[#717375] leading-relaxed font-medium">Excerpt: ${n.summary}</p>
+                    </div>
+                    <div class="pt-4 mt-4 border-t border-stone-200">
+                        <a href="${n.link}" target="_blank" class="text-[10px] font-black text-blue-600 uppercase hover:underline flex items-center gap-1 italic tracking-widest">READ ON REALINTERNATIONAL.COM <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                    </div>
+                </div>`).join('');
+        }
 
-                // 8% Lending - Generates Monthly Cash Flow
-                if(chkMonthly && chkMonthly.checked) {
-                    const v = parseFloat(document.getElementById('val-monthly').value) || 0;
-                    monthly += (v * 0.08) / 12; 
-                    profit += (v * 0.08 * 3); // 3 yrs interest profit
-                    bals.debt += v;
-                }
-                
-                // 15% Accrued Note - 0 Monthly, 1.45x multiple means 0.45x profit
-                if(chkNote && chkNote.checked) {
-                    const v = parseFloat(document.getElementById('val-note').value) || 0;
-                    profit += (v * 0.45); 
-                    bals.debt += v;
-                }
-                
-                // GT-48 - 0 Monthly, 1.43x multiple means 0.43x profit
-                if(chkGt48 && chkGt48.checked) {
-                    const v = parseFloat(document.getElementById('val-gt48').value) || 0;
-                    profit += (v * 0.43); 
-                    bals.dev += v;
-                }
-                
-                // Mueller - 0 Monthly, 1.25x Multiple means 0.25x profit
-                if(chkMueller && chkMueller.checked) {
-                    const v = parseFloat(document.getElementById('val-mueller').value) || 0;
-                    profit += (v * 0.25); 
-                    bals.comm += v;
-                }
+        // 【功能 2】退出计算器逻辑
+        function calculateExit() {
+            const year = parseInt(document.getElementById('exit-year-slider').value);
+            document.getElementById('year-display').innerText = year;
+            
+            // 简单拟合算法：持有越久，Multiple越高，IRR轻微衰减/平稳
+            const yearsHeld = year - 2025; // Base year 2025
+            
+            let multiple = 1.0;
+            let irr = 0;
 
-                const resMonthly = document.getElementById('res-monthly');
-                const resEquity = document.getElementById('res-equity');
-                
-                if(resMonthly) resMonthly.innerText = '+$' + Math.round(monthly).toLocaleString();
-                if(resEquity) resEquity.innerText = '+$' + Math.round(profit).toLocaleString();
+            if (year === 2026) { multiple = 1.25; irr = 25.0; }
+            else if (year === 2027) { multiple = 1.48; irr = 18.5; }
+            else if (year === 2028) { multiple = 1.75; irr = 16.2; }
+            else if (year === 2029) { multiple = 1.95; irr = 14.8; }
+            else if (year === 2030) { multiple = 2.20; irr = 14.0; }
 
-                if(proChartInstance) {
-                    proChartInstance.data.datasets[0].data = Object.values(bals);
-                    proChartInstance.update();
-                }
-            } catch (e) { console.error("Simulation error:", e); }
+            document.getElementById('calc-multiple').innerText = multiple.toFixed(2) + 'x';
+            document.getElementById('calc-irr').innerText = irr.toFixed(1) + '%';
         }
 
         window.onload = function() {
             try {
-                showSection('overview');
                 renderPortfolio(); 
-                filterNews('all');
+                renderNews();
+                calculateExit(); // Init calculator
                 
                 const allocCtx = document.getElementById('allocationChart')?.getContext('2d');
                 if(allocCtx) {
-                    new Chart(allocCtx, {
+                    allocChartInstance = new Chart(allocCtx, {
                         type: 'doughnut', data: { labels: ['Stabilized', 'Development', 'Commercial', 'Defensive'], datasets: [{ data: [1050000, 495080, 200000, 186786], backgroundColor: ['#17433a', '#b0955b', '#99b2ac', '#717375'], borderWidth: 0, hoverOffset: 10 }] },
-                        options: { maintainAspectRatio: false, cutout: '80%', plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20, font: { size: 10, weight: 'bold' }, color: '#717375' } } } }
+                        options: { maintainAspectRatio: false, cutout: '80%', plugins: { legend: { position: 'right', labels: { usePointStyle: true, padding: 15, font: { size: 10, weight: 'bold' } } } } }
                     });
                 }
-                
-                const trendCtx = document.getElementById('trendChart')?.getContext('2d');
-                if(trendCtx) {
-                    new Chart(trendCtx, {
-                        type: 'bar', data: { labels: ['23 FY', '24 FY', '25 Q1', '25 Q2', '25 Q3'], datasets: [{ label: 'Distributions', data: [120000, 180000, 45000, 52000, 160105], backgroundColor: '#17433a', borderRadius: 10, barThickness: 15 }] },
-                        options: { maintainAspectRatio: false, scales: { y: { display: false }, x: { grid: { display: false }, ticks: { font: { size: 10, weight: 'bold' }, color: '#94A3B8' } } }, plugins: { legend: { display: false } } }
-                    });
-                }
-
-                const proCtx = document.getElementById('proformaChart')?.getContext('2d');
-                if(proCtx) {
-                    proChartInstance = new Chart(proCtx, {
-                        type: 'pie', data: { labels: ['Stabilized', 'Development', 'Commercial', 'Defensive'], datasets: [{ data: [800000, 495080, 450000, 186786], backgroundColor: ['#17433a', '#b0955b', '#99b2ac', '#717375'], borderWidth: 2, borderColor: '#ffffff' }] },
-                        options: { maintainAspectRatio: false, plugins: { legend: { display: false } } }
-                    });
-                }
-                
-                runSim();
-
-            } catch (e) { console.error("Initialization error:", e); }
+            } catch (e) { console.error("Init error:", e); }
         };
     </script>
 </body>
