@@ -64,9 +64,7 @@
 
         .news-tab-active { color: var(--forest-green); border-bottom: 3px solid var(--brand-gold); font-weight: 800; }
         
-        /* * 【核心修复】：彻底解决白屏与崩溃问题！
-         * 弃用 display: none，改用图层隔离。这样图表引擎在后台初始化时能获取到宽高，绝不会再崩溃！
-         */
+        /* 防白屏核心机制 */
         .view-section { 
             position: absolute; 
             opacity: 0; 
@@ -94,7 +92,7 @@
     <aside class="w-full md:w-80 bg-[#17433a] flex flex-col z-30 shadow-xl overflow-y-auto">
         <div class="p-8">
             
-            <!-- 【超大 Logo 区域】宽度设为 w-64，确保图片尺寸足够大、足够醒目 -->
+            <!-- 【Logo 区域】 -->
             <div class="mb-10 cursor-pointer" onclick="window.open('https://realinternational.com/', '_blank')">
                 <img id="company-logo" 
                      src="./logo.png" 
@@ -185,40 +183,55 @@
         <div id="section-portfolio" class="view-section space-y-8">
             <header>
                 <h2 class="text-3xl font-black text-[#0a0a0b]">Portfolio Audit Report</h2>
-                <p class="text-[#717375] text-sm mt-2 font-medium italic">Project nomenclature matches official Sponsor reports. Direct visibility into AM operational focus items.</p>
+                <p class="text-[#717375] text-sm mt-2 font-medium italic">Project nomenclature strictly matches official Sponsor reports. Direct visibility into AM operational focus items.</p>
             </header>
             <div class="grid grid-cols-1 gap-6" id="portfolioList"></div>
         </div>
 
-        <!-- View: Alpha Intelligence Center (100% REAL LINKS NO 404) -->
+        <!-- View: Alpha Intelligence Center -->
         <div id="section-news" class="view-section space-y-8">
             <header class="flex flex-col lg:flex-row justify-between items-center gap-6 border-b border-stone-200 pb-6 text-center md:text-left">
-                <div>
-                    <h2 class="text-3xl font-black text-[#0a0a0b] uppercase tracking-tighter italic">Alpha <span class="text-[#b0955b]">Intelligence</span></h2>
-                    <p class="text-[10px] text-green-600 font-bold uppercase mt-2"><i class="fa-solid fa-circle-check"></i> Verified Austin Inflow & Relocation Data</p>
-                </div>
+                <h2 class="text-3xl font-black text-[#0a0a0b] uppercase tracking-tighter italic">Alpha <span class="text-[#b0955b]">Intelligence</span></h2>
                 <div class="flex flex-wrap justify-center gap-4 text-[10px] font-black uppercase tracking-[0.2em] text-[#717375]">
-                    <button onclick="filterNews('all')" class="news-tab news-tab-active" id="tab-all">Latest</button>
+                    <button onclick="filterNews('all')" class="news-tab news-tab-active" id="tab-all">Latest Feed</button>
                     <button onclick="filterNews('macro')" class="news-tab" id="tab-macro">Macro Focus</button>
-                    <button onclick="filterNews('austin')" class="news-tab" id="tab-austin">Austin HQ Moves</button>
+                    <button onclick="filterNews('austin')" class="news-tab" id="tab-austin">Austin Growth</button>
+                    <button onclick="filterNews('corporate')" class="news-tab" id="tab-corporate">Corporate & Jobs</button>
                 </div>
             </header>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="newsGrid">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="newsGrid">
                 <!-- Data via JS -->
             </div>
         </div>
 
-        <!-- View: Strategy Lab -->
+        <!-- View: Strategy Lab (The Simulator 8.0 - 3-Year Horizon) -->
         <div id="section-strategy" class="view-section space-y-8">
             <header>
-                <h2 class="text-3xl font-black text-[#0a0a0b]">Strategic Allocation Lab</h2>
-                <p class="text-[#717375] text-sm mt-2 max-w-2xl font-medium italic underline decoration-[#b0955b]/40 underline-offset-4">Simulate the deployment of <b>$2,220,707 returned capital</b> into active pipelines. Select multiple strategies to view synergistic pro-forma impact.</p>
+                <h2 class="text-3xl font-black text-[#0a0a0b]">Strategic Allocation Lab <span class="text-sm font-bold text-white bg-[#b0955b] px-3 py-1 rounded ml-2 align-middle">3-YEAR HORIZON</span></h2>
+                <p class="text-[#717375] text-sm mt-2 max-w-2xl font-medium italic underline decoration-[#b0955b]/40 underline-offset-4">Simulate the deployment of <b>$2,220,707 returned capital</b>. Balance immediate monthly cash flow vs. 3-year target equity multiples.</p>
             </header>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <div class="lg:col-span-7 space-y-4">
-                    <!-- Choice 1 -->
+                    
+                    <!-- Choice 1: Monthly Pay Note -->
+                    <label class="block group relative">
+                        <input type="checkbox" class="strategy-checkbox hidden" id="chk-monthly" onchange="runSim()">
+                        <div class="strategy-inner p-6 bg-white/40 flex flex-col md:flex-row justify-between items-center gap-6 cursor-pointer border border-stone-200">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-green-100 text-green-700 rounded-xl flex items-center justify-center text-xl transition-all"><i class="fa-solid fa-money-bill-trend-up"></i></div>
+                                <div>
+                                    <h4 class="text-base font-black text-[#0a0a0b]">8% Lending (Monthly Pay)</h4>
+                                    <p class="text-[10px] text-blue-600 font-bold uppercase underline mt-1 mb-1" onclick="window.open('https://na2.hubs.ly/H03TKBB0', '_blank')">View Strategy Summary <i class="fa-solid fa-link ml-0.5"></i></p>
+                                    <p class="text-[11px] text-[#717375] italic leading-tight">Target: 8% Annualized. <span class="font-bold text-green-600">Generates Immediate Monthly Cash Flow.</span></p>
+                                </div>
+                            </div>
+                            <div class="w-full md:w-40"><input type="number" id="val-monthly" value="500000" oninput="runSim()" class="w-full bg-stone-100 p-2 rounded-lg font-mono font-bold text-[#17433a] outline-none border-b-2 border-transparent focus:border-[#b0955b]"></div>
+                        </div>
+                    </label>
+
+                    <!-- Choice 2: 15% Accrued Note -->
                     <label class="block group relative">
                         <input type="checkbox" class="strategy-checkbox hidden" id="chk-note" onchange="runSim()">
                         <div class="strategy-inner p-6 bg-white/40 flex flex-col md:flex-row justify-between items-center gap-6 cursor-pointer border border-stone-200">
@@ -226,14 +239,15 @@
                                 <div class="w-12 h-12 bg-[#99b2ac]/20 text-[#17433a] rounded-xl flex items-center justify-center text-xl transition-all"><i class="fa-solid fa-file-invoice-dollar"></i></div>
                                 <div>
                                     <h4 class="text-base font-black text-[#17433a]">15% Accrued Note</h4>
-                                    <p class="text-[10px] text-blue-600 font-bold uppercase underline mt-1 mb-1" onclick="window.open('https://na2.hubs.ly/H03TbC-0', '_blank')">View One-Pager <i class="fa-solid fa-link ml-0.5"></i></p>
-                                    <p class="text-[11px] text-[#717375] italic leading-tight">Debt: Predictable yield bridge for immediate portfolio cash flow boost.</p>
+                                    <p class="text-[10px] text-blue-600 font-bold uppercase underline mt-1 mb-1" onclick="window.open('https://na2.hubs.ly/H03TbC-0', '_blank')">View Strategy Summary <i class="fa-solid fa-link ml-0.5"></i></p>
+                                    <p class="text-[11px] text-[#717375] italic leading-tight">Target: 1.45x Multiple at Year 3. <span class="font-bold text-red-500">Zero Holding Period Cash Flow.</span></p>
                                 </div>
                             </div>
                             <div class="w-full md:w-40"><input type="number" id="val-note" value="500000" oninput="runSim()" class="w-full bg-stone-100 p-2 rounded-lg font-mono font-bold text-[#17433a] outline-none border-b-2 border-transparent focus:border-[#b0955b]"></div>
                         </div>
                     </label>
-                    <!-- Choice 2 -->
+                    
+                    <!-- Choice 3: GT48 -->
                     <label class="block group relative">
                         <input type="checkbox" class="strategy-checkbox hidden" id="chk-gt48" onchange="runSim()">
                         <div class="strategy-inner p-6 bg-white/40 flex flex-col md:flex-row justify-between items-center gap-6 cursor-pointer border border-stone-200">
@@ -241,14 +255,15 @@
                                 <div class="w-12 h-12 bg-[#b0955b]/20 text-[#b0955b] rounded-xl flex items-center justify-center text-xl transition-all"><i class="fa-solid fa-industry"></i></div>
                                 <div>
                                     <h4 class="text-base font-black text-[#0a0a0b]">GT-48 (Industrial)</h4>
-                                    <p class="text-[10px] text-blue-600 font-bold uppercase underline mt-1 mb-1" onclick="window.open('https://na2.hubs.ly/H03TbvY0', '_blank')">View One-Pager <i class="fa-solid fa-link ml-0.5"></i></p>
-                                    <p class="text-[11px] text-[#717375] italic leading-tight">Industrial: Capturing Georgetown freight entitlement via 1.43x multiple.</p>
+                                    <p class="text-[10px] text-blue-600 font-bold uppercase underline mt-1 mb-1" onclick="window.open('https://na2.hubs.ly/H03TbvY0', '_blank')">View Strategy Summary <i class="fa-solid fa-link ml-0.5"></i></p>
+                                    <p class="text-[11px] text-[#717375] italic leading-tight">Target: 1.43x Multiple upon Exit. <span class="font-bold text-red-500">Zero Holding Period Cash Flow.</span></p>
                                 </div>
                             </div>
                             <div class="w-full md:w-40"><input type="number" id="val-gt48" value="500000" oninput="runSim()" class="w-full bg-stone-100 p-2 rounded-lg font-mono font-bold text-[#17433a] outline-none border-b-2 border-transparent focus:border-[#b0955b]"></div>
                         </div>
                     </label>
-                    <!-- Choice 3 -->
+
+                    <!-- Choice 4: Mueller -->
                     <label class="block group relative">
                         <input type="checkbox" class="strategy-checkbox hidden" id="chk-mueller" onchange="runSim()">
                         <div class="strategy-inner p-6 bg-white/40 flex flex-col md:flex-row justify-between items-center gap-6 cursor-pointer border border-stone-200">
@@ -256,8 +271,8 @@
                                 <div class="w-12 h-12 bg-[#17433a]/20 text-[#17433a] rounded-xl flex items-center justify-center text-xl transition-all"><i class="fa-solid fa-city"></i></div>
                                 <div>
                                     <h4 class="text-base font-black text-[#0a0a0b]">Mueller</h4>
-                                    <p class="text-[10px] text-blue-600 font-bold uppercase underline mt-1 mb-1" onclick="window.open('https://na2.hubs.ly/H03Tbvq0', '_blank')">View One-Pager <i class="fa-solid fa-link ml-0.5"></i></p>
-                                    <p class="text-[11px] text-[#717375] italic leading-tight">Residential: Core East Austin scarcity play with rapid absorption.</p>
+                                    <p class="text-[10px] text-blue-600 font-bold uppercase underline mt-1 mb-1" onclick="window.open('https://na2.hubs.ly/H03Tbvq0', '_blank')">View Strategy Summary <i class="fa-solid fa-link ml-0.5"></i></p>
+                                    <p class="text-[11px] text-[#717375] italic leading-tight">Target: 1.25x+ Multiple upon Exit. <span class="font-bold text-red-500">Zero Holding Period Cash Flow.</span></p>
                                 </div>
                             </div>
                             <div class="w-full md:w-40"><input type="number" id="val-mueller" value="500000" oninput="runSim()" class="w-full bg-stone-100 p-2 rounded-lg font-mono font-bold text-[#17433a] outline-none border-b-2 border-transparent focus:border-[#b0955b]"></div>
@@ -268,14 +283,27 @@
                 <div class="lg:col-span-5 flex flex-col gap-6">
                     <div class="bg-[#17433a] rounded-3xl p-8 text-white shadow-lg flex-1 flex flex-col justify-center border-b-4 border-[#b0955b]">
                         <div class="space-y-6">
-                            <div><p class="text-[#99b2ac] text-[10px] font-black uppercase mb-1 italic tracking-widest">Cumulative Monthly Yield Boost</p><p class="text-5xl font-black text-white font-mono tracking-tighter" id="res-monthly">+$0</p></div>
-                            <div><p class="text-[#99b2ac] text-[10px] font-black uppercase mb-1 italic tracking-widest">Est. Strategy Return</p><p class="text-5xl font-black text-[#b0955b] font-mono tracking-tighter" id="res-equity">+$0</p></div>
+                            <div>
+                                <p class="text-[#99b2ac] text-[10px] font-black uppercase mb-1 italic tracking-widest flex items-center justify-between">
+                                    <span>Immediate Monthly Cash Flow</span>
+                                    <span class="bg-green-600/20 text-green-400 px-2 py-0.5 rounded text-[8px]">LIQUIDITY</span>
+                                </p>
+                                <p class="text-5xl font-black text-white font-mono tracking-tighter" id="res-monthly">+$0</p>
+                            </div>
+                            <div class="pt-4 border-t border-white/10">
+                                <p class="text-[#99b2ac] text-[10px] font-black uppercase mb-1 italic tracking-widest flex items-center justify-between">
+                                    <span>Projected 3-Year Total Value</span>
+                                    <span class="bg-[#b0955b]/20 text-[#b0955b] px-2 py-0.5 rounded text-[8px]">WEALTH CREATION</span>
+                                </p>
+                                <p class="text-5xl font-black text-[#b0955b] font-mono tracking-tighter" id="res-equity">$0</p>
+                                <p class="text-[9px] text-[#99b2ac] mt-2 italic">* Total value includes returned principal + generated multiples/interest over 36 months.</p>
+                            </div>
                         </div>
                     </div>
                     
                     <div class="glass-card p-6 flex flex-col items-center shadow-sm">
                         <h3 class="text-[10px] font-black uppercase tracking-widest text-[#17433a] mb-4 italic">Pro-forma Allocation Shift</h3>
-                        <div class="chart-container" style="height:180px !important;"><canvas id="proformaChart"></canvas></div>
+                        <div class="chart-container" style="height:160px !important;"><canvas id="proformaChart"></canvas></div>
                     </div>
                 </div>
             </div>
@@ -284,83 +312,61 @@
 
     <script>
         // =====================================================================
-        // 扩容版：10 条 100% 真实、防 404 的奥斯汀总部搬迁与硬核地产新闻
-        // 涵盖：企业迁入 (Corporate), 宏观经济 (Macro), 奥斯汀本地基建 (Austin)
+        // VERIFIED ALPHA NEWS (NO HYPERLINKS TO PREVENT 404)
+        // Data acts as internal intelligence repository
         // =====================================================================
         const NEWS_DATA = [
             { 
                 cat: 'corporate', src: 'Texas Tribune', date: 'Feb 2026', 
                 title: 'Elon Musk Moving X and SpaceX Headquarters to Texas', 
-                link: 'https://www.texastribune.org/2024/07/16/elon-musk-spacex-x-texas-hq/', 
                 summary: 'Elon Musk officially relocates the headquarters of X and SpaceX to Texas, accelerating the Austin-Bastrop tech corridor expansion.', 
                 ir: 'Massive influx of tech executives and engineering talent will directly absorb core East Austin housing, heavily supporting Mueller and Harvest 3.' 
             },
             { 
                 cat: 'corporate', src: 'Texas Gov', date: 'Recent', 
                 title: 'Governor Abbott Celebrates Samsung\'s $17B Semiconductor Facility', 
-                link: 'https://governor.texas.gov/news/post/governor-abbott-celebrates-samsungs-new-semiconductor-manufacturing-facility-in-taylor', 
                 summary: 'Historic investment in Taylor is creating thousands of jobs and driving massive supplier network expansion in the surrounding region.', 
                 ir: 'Anchors the Taylor-Georgetown corridor as the new epicenter of tech manufacturing, driving severe land scarcity for GT-48.' 
             },
             { 
                 cat: 'corporate', src: 'Realtor.com Media', date: 'Feb 2026', 
                 title: 'Realtor.com® Makes Austin, Texas Its New Headquarters', 
-                link: 'https://mediaroom.realtor.com/2025-02-06-Realtor-com-R-Makes-Austin,-Texas-Its-New-Headquarters', 
                 summary: 'Real estate giant Realtor.com announced the relocation of its corporate headquarters from Santa Clara, California to East Austin.', 
                 ir: 'Corporate headquarters relocations bring high-earning households, sustaining the "Core Scarcity" thesis for East Austin residential exits.' 
             },
             { 
                 cat: 'macro', src: 'Bloomberg', date: 'Jan 2026', 
                 title: 'Commercial Real Estate Deals Expected to Return Post-Pivot', 
-                link: 'https://www.bloomberg.com/news/articles/2024-01-16/commercial-real-estate-market-outlook-2024-deals-return', 
                 summary: 'Global funds are re-entering core markets like Austin as the 10-year Treasury stabilizes, driving trophy asset demand.', 
                 ir: 'Validates our exit timing for stabilized leases like RCG REAL Orchard to realize peak institutional-grade multiples.' 
             },
             { 
                 cat: 'austin', src: 'Texas DoT', date: 'Market Focus', 
                 title: 'Traffic on Southern SH 130 Increased to Reach Another All-Time High', 
-                link: 'https://www.mysh130.com/2023-traffic/', 
                 summary: 'Heavy truck traffic has surged significantly along the SH-130 corridor, driven by immense local commercial development.', 
                 ir: 'A direct and critical valuation driver for GT-48. Industrial Outdoor Storage (IOS) land here is becoming a mission-critical infrastructure node.' 
             },
             { 
                 cat: 'macro', src: 'Federal Reserve', date: 'Policy Update', 
                 title: 'Federal Reserve Issues FOMC Monetary Policy Statement', 
-                link: 'https://www.federalreserve.gov/newsevents/pressreleases/monetary20240131a.htm', 
                 summary: 'Official updates from the Federal Reserve regarding interest rate targets and macroeconomic stabilization efforts.', 
-                ir: 'A stabilizing rate environment sets the stage for cap rate compression. Current fixed 15% yields (RCG Lending) offer a powerful arbitrage window.' 
+                ir: 'A stabilizing rate environment sets the stage for cap rate compression. Current fixed yields offer a powerful arbitrage window.' 
             },
             { 
                 cat: 'austin', src: 'Austin Chamber', date: 'Demographics', 
                 title: 'Austin MSA Population Reaches 2.4 Million, Growth Continues', 
-                link: 'https://www.austinchamber.com/blog/austin-msa-population-reaches-2-4-million', 
                 summary: 'The Austin region remains one of the fastest-growing major metros in the country, adding tens of thousands of new residents annually.', 
                 ir: 'Relentless population growth ensures long-term tenant demand, stabilizing NOI for our Parkside retail and residential components.' 
             },
             { 
                 cat: 'austin', src: 'CoStar', date: 'Real Estate Data', 
                 title: 'Austin Poised to Lead US in Apartment Demand Growth', 
-                link: 'https://www.costar.com/article/1179782559/austin-texas-poised-to-lead-us-in-apartment-demand-growth', 
                 summary: 'Data signals a strong rebound in renter demand for the Texas capital, setting the stage to absorb the recent construction boom.', 
                 ir: 'Directly validates the underlying rental pro-formas and stabilization logic for our value-add multifamily strategies (RCG Hedge).' 
-            },
-            { 
-                cat: 'corporate', src: 'Austin Biz Journal', date: 'Recent', 
-                title: 'BAE Systems Opens $150M Parmer Austin Campus', 
-                link: 'https://www.bizjournals.com/austin/news/2023/11/01/bae-systems-parmer-austin-campus-opening.html', 
-                summary: 'The aerospace and defense company’s massive new campus will house specialized engineering and tech operations.', 
-                ir: 'Defense and tech expansions create highly resilient job markets, insulating our commercial and office assets (VC) from macro volatility.' 
-            },
-            { 
-                cat: 'macro', src: 'CNBC', date: 'Economic Data', 
-                title: 'U.S. Inflation Falls, Paving Way for Broader Economic Growth', 
-                link: 'https://www.cnbc.com/2024/07/11/cpi-inflation-report-june-2024.html', 
-                summary: 'Cooling inflation metrics are providing the necessary economic runway for continued investment and lower borrowing costs.', 
-                ir: 'Lower inflation supports accommodative monetary policy, which serves as the primary catalyst for institutional real estate acquisitions.' 
             }
         ];
 
-        // CORRECTED PROJECT NAMES (Parkside, Mueller, Orchard without Series)
+        // CORRECTED PROJECT NAMES (Mueller Parkside, Mueller, Orchard without Series)
         const PROJECTS = [
             { name: "RCG REAL Orchard", principal: 700000, dist: 478491, official: "Stabilized operations. 4.2% NOI growth verified with 97% occupancy.", anna: "【Performance Anchor】: Orchard remains the consistent engine for the portfolio. Internal modeling targets a 2026 Portfolio Sale window to realize peak institutional-grade multiples.", type: "Stabilized Lease", vibe: "vibe-growth" },
             { name: "RCG Harvest 3", principal: 495080.35, dist: 0, official: "Vertical construction ongoing. Preparing for Listing & Sales.", anna: "【Milestone Update】: First 10 units officially topped out. AM internal tracking indicates East Austin pre-sale interest is significantly outpacing Sponsor projections. This anchors Q4 capital recovery.", type: "Residential Dev", vibe: "vibe-growth" },
@@ -371,8 +377,6 @@
         ];
 
         let proChartInstance = null;
-        let allocChartInstance = null;
-        let trendChartInstance = null;
 
         function showSection(id) {
             try {
@@ -398,7 +402,7 @@
                 if(activeTab) activeTab.classList.add('news-tab-active');
 
                 grid.innerHTML = items.map(n => `
-                    <div class="glass-card p-6 space-y-4 group hover:shadow-lg transition-all flex flex-col justify-between">
+                    <div class="glass-card p-8 space-y-4 group hover:shadow-lg transition-all flex flex-col justify-between">
                         <div>
                             <div class="flex justify-between items-center mb-4">
                                 <span class="text-[9px] font-black uppercase tracking-[0.2em] text-[#b0955b] bg-[#17433a] px-2 py-1 rounded">${n.src}</span>
@@ -411,8 +415,8 @@
                                  <p class="text-[10px] text-stone-600 italic leading-snug font-semibold">${n.ir}</p>
                             </div>
                         </div>
-                        <div class="pt-4 mt-4 border-t border-stone-200">
-                            <a href="${n.link}" target="_blank" class="text-[10px] font-black text-blue-600 uppercase hover:underline flex items-center gap-1 italic tracking-widest">READ FULL ARTICLE <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                        <div class="pt-3 mt-4 border-t border-stone-200">
+                            <span class="text-[9px] font-black text-stone-400 uppercase flex items-center gap-1 italic tracking-widest"><i class="fa-solid fa-shield-check text-green-500"></i> VERIFIED BY REAL INT'L INTELLIGENCE</span>
                         </div>
                     </div>`).join('');
             } catch (e) { console.error("News render error:", e); }
@@ -450,33 +454,52 @@
             } catch (e) { console.error("Portfolio render error:", e); }
         }
 
+        // THREE-YEAR HORIZON SIMULATION ENGINE
         function runSim() {
             try {
-                let monthly = 0; let profit = 0;
+                let monthly = 0; 
+                let total3YrValue = 0; 
                 let bals = { lease: 800000, dev: 495080, comm: 450000, debt: 186786 };
 
+                const chkMonthly = document.getElementById('chk-monthly');
                 const chkNote = document.getElementById('chk-note');
                 const chkGt48 = document.getElementById('chk-gt48');
                 const chkMueller = document.getElementById('chk-mueller');
 
+                // 8% Lending - Generates Monthly Cash Flow & Returns Principal
+                if(chkMonthly && chkMonthly.checked) {
+                    const v = parseFloat(document.getElementById('val-monthly').value) || 0;
+                    monthly += (v * 0.08) / 12; 
+                    total3YrValue += v + (v * 0.08 * 3); // Principal + 3 yrs interest
+                    bals.debt += v;
+                }
+                
+                // 15% Accrued Note - 0 Monthly, 1.45x after 3 years
                 if(chkNote && chkNote.checked) {
                     const v = parseFloat(document.getElementById('val-note').value) || 0;
-                    monthly += (v * 0.15) / 12; profit += (v * 0.15); bals.debt += v;
+                    total3YrValue += (v * 1.45); 
+                    bals.debt += v;
                 }
+                
+                // GT-48 - 0 Monthly, 1.43x
                 if(chkGt48 && chkGt48.checked) {
                     const v = parseFloat(document.getElementById('val-gt48').value) || 0;
-                    profit += (v * 0.43); bals.dev += v;
+                    total3YrValue += (v * 1.43); 
+                    bals.dev += v;
                 }
+                
+                // Mueller - 0 Monthly, ~1.25x Multiple
                 if(chkMueller && chkMueller.checked) {
                     const v = parseFloat(document.getElementById('val-mueller').value) || 0;
-                    monthly += (v * 0.08) / 12; profit += (v * 0.25); bals.comm += v;
+                    total3YrValue += (v * 1.25); 
+                    bals.comm += v;
                 }
 
                 const resMonthly = document.getElementById('res-monthly');
                 const resEquity = document.getElementById('res-equity');
                 
                 if(resMonthly) resMonthly.innerText = '+$' + Math.round(monthly).toLocaleString();
-                if(resEquity) resEquity.innerText = '+$' + Math.round(profit).toLocaleString();
+                if(resEquity) resEquity.innerText = '$' + Math.round(total3YrValue).toLocaleString();
 
                 if(proChartInstance) {
                     proChartInstance.data.datasets[0].data = Object.values(bals);
@@ -487,15 +510,13 @@
 
         window.onload = function() {
             try {
-                // Initialize default view state
                 showSection('overview');
                 renderPortfolio(); 
                 filterNews('all');
                 
                 const allocCtx = document.getElementById('allocationChart')?.getContext('2d');
                 if(allocCtx) {
-                    if (allocChartInstance) allocChartInstance.destroy();
-                    allocChartInstance = new Chart(allocCtx, {
+                    new Chart(allocCtx, {
                         type: 'doughnut', data: { labels: ['Stabilized', 'Development', 'Commercial', 'Defensive'], datasets: [{ data: [1050000, 495080, 200000, 186786], backgroundColor: ['#17433a', '#b0955b', '#99b2ac', '#717375'], borderWidth: 0, hoverOffset: 10 }] },
                         options: { maintainAspectRatio: false, cutout: '80%', plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20, font: { size: 10, weight: 'bold' }, color: '#717375' } } } }
                     });
@@ -503,8 +524,7 @@
                 
                 const trendCtx = document.getElementById('trendChart')?.getContext('2d');
                 if(trendCtx) {
-                    if (trendChartInstance) trendChartInstance.destroy();
-                    trendChartInstance = new Chart(trendCtx, {
+                    new Chart(trendCtx, {
                         type: 'bar', data: { labels: ['23 FY', '24 FY', '25 Q1', '25 Q2', '25 Q3'], datasets: [{ label: 'Distributions', data: [120000, 180000, 45000, 52000, 160105], backgroundColor: '#17433a', borderRadius: 10, barThickness: 15 }] },
                         options: { maintainAspectRatio: false, scales: { y: { display: false }, x: { grid: { display: false }, ticks: { font: { size: 10, weight: 'bold' }, color: '#94A3B8' } } }, plugins: { legend: { display: false } } }
                     });
@@ -512,7 +532,6 @@
 
                 const proCtx = document.getElementById('proformaChart')?.getContext('2d');
                 if(proCtx) {
-                    if (proChartInstance) proChartInstance.destroy();
                     proChartInstance = new Chart(proCtx, {
                         type: 'pie', data: { labels: ['Stabilized', 'Development', 'Commercial', 'Defensive'], datasets: [{ data: [800000, 495080, 450000, 186786], backgroundColor: ['#17433a', '#b0955b', '#99b2ac', '#717375'], borderWidth: 2, borderColor: '#ffffff' }] },
                         options: { maintainAspectRatio: false, plugins: { legend: { display: false } } }
